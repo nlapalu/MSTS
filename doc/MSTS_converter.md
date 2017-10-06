@@ -1,5 +1,10 @@
-# MSTS: MAINE-Seq Tool Suite
-
 ## MSTS_converter.py
 
+blabla
 
+### Usage and options
+
+#### Usage
+
+
+#### Options  
