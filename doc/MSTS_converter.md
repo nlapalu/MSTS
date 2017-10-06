@@ -18,7 +18,7 @@ blabla
 | `--wig` | output wig file |
 | `--cov` | output coverage file |
 | `--size` | output size file |
-| `-g, --genome` | genome file used to sort references in defined rank, expected format: <refname><TAB><size> |
+| `-g, --genome` | genome file used to sort references in defined rank, expected format: \<refname\>\<TAB\>\<size\> |
 | `-w, --window` | for fragment middle mode only, +- window size on each side |
 | `-k, --keepPosBedFile` | bed file used to filter positions, keep only positions in file, warning only usable with seq < 100Mb  |
 | `--minFSize` | minimum fragment size to keep |
