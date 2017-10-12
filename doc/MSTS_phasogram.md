@@ -1,6 +1,6 @@
 # MSTS_phasogram.py
 
-blabla
+This script allows you to draw a phasogram from a bigWig file.
 
 ## Usage and options
 
@@ -9,7 +9,7 @@ blabla
 `MSTS_phasogram.py input.bw -w 1000 -o myphasogram.png -t "phasogram wild-type data" -v 2`
 
 
-### Options
+### Options:
 
 | Option | Description |
 | ------ | ----------- |
@@ -23,6 +23,6 @@ blabla
 | `--version` | tool suite version |
 | `-h, --help` | help message |
 
-### Output
+## Outputs
 
 ![image](images/myphasogram.png)
