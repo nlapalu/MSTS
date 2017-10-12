@@ -6,7 +6,10 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BI
 
 ## Dependencies and external tools
 
+### External tools
 
+* samtools
+* wigToBigWig (Kent's tools)
 
 ## Install
 
@@ -34,10 +37,15 @@ Be sure your mapping file is sorted and indexing, if not:
 
 then:
 
-`MSTS_converter.py mapping.sorted.bam -m fragment-middle -w 20 -p mapping --wig --size`
+`MSTS_converter.py mapping.sorted.bam -m fragment-middle -w 20 -p mapping -g assembly.genome --wig --size`
+
+#### convert wig file to bigWig file
+
+`wigToBigWig mapping.wig assembly.genome mapping.bw`
 
 #### draw a phasogram 
 
+`MSTS_phasogram.py mapping.bw -w 1200 -o mapping.phasogram.png -t "phasogram - mapping" -v 2 `
 
 ## MSTS tools
 
