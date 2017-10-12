@@ -11,7 +11,7 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BI
 ## MSTS tools
 
 * [MSTS_converter.py](doc/MSTS_converter.md)
-* MSTS_phasogram.py
+* [MSTS_phasogram.py](doc/MSTS_phasogram.md)
 
 ## References
 
