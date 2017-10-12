@@ -22,3 +22,7 @@ blabla
 | `-v, --verbosity` | increase output verbosity 1=error, 2=info, 3=debug |
 | `--version` | tool suite version |
 | `-h, --help` | help message |
+
+### Output
+
+![image](images/myphasogram.png)
