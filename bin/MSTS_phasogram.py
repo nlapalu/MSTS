@@ -12,7 +12,6 @@ from scipy import stats
 
 from MSTS.version import __version__
 from MSTS.Graphics import Graphics
-from MSTS.Utils import Utils
 
 from lib.detect_peaks import detect_peaks
 
