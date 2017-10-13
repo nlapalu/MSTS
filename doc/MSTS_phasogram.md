@@ -7,7 +7,9 @@ This script allows you to draw a phasogram from a bigWig file.
 ### Usage:
 
 `MSTS_phasogram.py input.bw -w 1000 -o myphasogram.png -t "phasogram wild-type data" -v 2`
+
 or 
+
 `MSTS_phasogram.py set2.lmb40.bw  -w 1000 -o myphasogram.png -t "phasogram wild-type data" -v 2  --flush --regression`
 
 ### Options:
