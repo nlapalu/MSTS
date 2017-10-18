@@ -69,7 +69,7 @@ then:
 
 #### draw a phasogram 
 
-`MSTS_phasogram.py mapping.bw -w 1200 -o mapping.phasogram.png -t "phasogram - mapping" -v 2 `
+`MSTS_phasogram.py mapping.bw -w 1200 -o mapping.phasogram.png -t "phasogram - mapping" -v 2 --flush --regression > mapping.phaso`
 
 ## MSTS tools
 
