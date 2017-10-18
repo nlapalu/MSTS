@@ -11,7 +11,31 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BI
 * samtools
 * wigToBigWig (Kent's tools)
 
-## Install
+## Install  (DEV mode !!!)
+
+### Prerequesites:
+
+TODO
+
+### Download
+
+```
+wget https://github.com/nlapalu/MSTS/archive/develop.zip
+unzip develop.zip
+cd MSTS-develop/
+```
+
+### Test the code
+
+### Install as root
+
+### Install as user
+
+```
+python setup.py install --prefix=/home/nlapalu/test/MSTS
+export PYTHONPATH=/home/nlapalu/test/MSTS/lib/python2.7/site-packages/
+export PATH=$PATH:/home/nlapalu/test/MSTS/bin
+```
 
 ## Protocole to analyze MAINE-Seq data
 
