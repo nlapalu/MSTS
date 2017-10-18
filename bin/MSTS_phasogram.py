@@ -13,7 +13,7 @@ from scipy import stats
 from MSTS.version import __version__
 from MSTS.Graphics import Graphics
 
-from lib.detect_peaks import detect_peaks
+from extlib.detect_peaks import detect_peaks
 
 if __name__ == "__main__":
 

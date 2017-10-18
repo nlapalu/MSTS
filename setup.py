@@ -49,7 +49,7 @@ setup(name='MSTS',
       license='To define',
       scripts=['bin/MSTS_phasogram.py',
                'bin/MSTS_converter.py'],
-      packages=['MSTS','tests',],
+      packages=['MSTS','tests','extlib'],
       data_files=[('test-data', ['test-data/input_min.bam',]),
                   ('.',['README.md'])],
       cmdclass={
