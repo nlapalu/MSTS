@@ -38,7 +38,7 @@ or
 ## Outputs
 
 #### simple phasogram on gene (start and end)
-![image](images/myfeaturestartphasogram.png | width=36) ![image](images/myfeatureendphasogram.png){:height="36px" width="36px"}
+![image](images/myfeaturestartphasogram.png?s=36) ![image](images/myfeatureendphasogram.png){:height="36px" width="36px"}
 
 #### phasogram with context (--context)
 ![image](images/myfeaturestartphasogram2.png) ![image](images/myfeatureendphasogram2.png)
