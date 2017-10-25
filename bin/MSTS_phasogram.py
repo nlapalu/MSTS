@@ -23,6 +23,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(prog=program)
     parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('--version', action='version', version='{} {}'.format(program,version))
 
     parser.add_argument("bigWig", help="Input bigWig File", type=str)
     parser.add_argument("-w", "--window", help="window size to compute phases", type=int, default=1200)

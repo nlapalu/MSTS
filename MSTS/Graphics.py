@@ -70,3 +70,31 @@ class Graphics(object):
         canvas.print_figure(out, dpi=80)
 
 
+    @staticmethod
+    def plotDistributionWithGeneHistogram(lXs, lYs, lZs, lZOthers,out="out.png", title="title", xax="xax", yax="yax", yax2="yax2"):
+        """Draw distribution and an histogram for gene coverage"""
+
+        fig = plt.Figure(figsize=(20,20))
+        fig.suptitle(title, fontsize=32)
+        gs = gridspec.GridSpec(2, 1, width_ratios=[1,0],height_ratios=[1, 3], hspace=0.1) 
+        ax1 = fig.add_subplot(gs[0])
+        ax1.plot(lXs,lZOthers)
+        lZmin = [0] * len(lZs)
+        ax1.vlines(lXs,lZmin,lZOthers, colors='grey', alpha=0.15)
+        ax1.set_xlim(lXs[0],lXs[-1])
+        lZmax = lZs
+        lZmin2 = [300] * len(lZs)
+        ax2 = fig.add_subplot(gs[1])
+        ax2.vlines(lXs,lZmin,lZmax, colors='grey', alpha=0.15)
+        ax3 = ax2.twinx()
+        ax3.plot(lXs,lYs)
+        ax2.set_xlim(lXs[0],lXs[-1])
+        ax2.set_ylim(0,max(lZs)+int(max(lZs)*0.05))
+        ax3.set_ylim(min(lYs)-1,max(lYs)+1)
+        axis_font = {'size':'28'}
+        ax2.set_xlabel(xax, **axis_font)
+        ax3.set_ylabel(yax2, **axis_font)
+        ax2.set_ylabel(yax, **axis_font)
+        canvas = FigureCanvasAgg(fig)
+        canvas.print_figure(out, dpi=80)
+
