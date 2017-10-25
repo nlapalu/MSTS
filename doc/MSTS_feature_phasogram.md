@@ -39,7 +39,7 @@ or
 
 #### simple phasogram on gene (start and end)
 
-<img src="images/myfeaturestartphasogram.png" width="100" height="100"> <img src="images/myfeatureendphasogram.png" width="100" height="100">
+<img src="images/myfeaturestartphasogram.png" width="400"> <img src="images/myfeatureendphasogram.png" width="400">
 ![image](images/myfeaturestartphasogram.png?v=4&s=36) ![image](images/myfeatureendphasogram.png?v=4&s=36)
 
 #### phasogram with context (--context)
