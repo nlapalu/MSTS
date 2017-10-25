@@ -39,11 +39,10 @@ or
 
 #### simple phasogram on gene (start and end)
 
-<img src="images/myfeaturestartphasogram.png" width="400"> <img src="images/myfeatureendphasogram.png" width="400">
-![image](images/myfeaturestartphasogram.png?v=4&s=36) ![image](images/myfeatureendphasogram.png?v=4&s=36)
+<img src="images/myfeaturestartphasogram.png" width="450"> <img src="images/myfeatureendphasogram.png" width="450">
 
 #### phasogram with context (--context)
-![image](images/myfeaturestartphasogram2.png) ![image](images/myfeatureendphasogram2.png)
+<img src="images/myfeaturestartphasogram2.png" width="450"> <img src="images/myfeatureendphasogram2.png" width="450">
 
 #### phasogram with gaussian smoothing (--GaussianSmoothing)
-![image](images/myfeaturestartphasogram3.png) ![image](images/myfeatureendphasogram3.png)
+<img src="images/myfeaturestartphasogram3.png" width="450"> <img src="images/myfeatureendphasogram3.png" width="450">
