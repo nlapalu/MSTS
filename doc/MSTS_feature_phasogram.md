@@ -6,11 +6,11 @@ This script allows you to draw a phasogram from a bigWig file on specific featur
 
 ### Usage:
 
-`MSTS_feature_phasogram.py input.bw genes.gff3 -w 1000 -o myphasogram.png -t "phasogram wild-type data" -v 2`
+`MSTS_feature_phasogram.py input.bw genes.gff3 -v 2 -o myfeaturephasogram.png -t "phasogram on genes, start as pivot"`
 
 or 
 
-`MSTS_phasogram.py input.bw  -w 1000 -o myphasogram.png -t "phasogram wild-type data" -v 2  --flush --regression`
+`MSTS_feature_phasogram.py input.bw genes.gff3 -v 2 -o myfeaturephasogram.png -t "phasogram on genes, end as pivot, with context, with smoothing" -p end --context --GaussianSmoothing`
 
 ### Options:
 
@@ -38,10 +38,10 @@ or
 ## Outputs
 
 #### simple phasogram on gene (start and end)
-![image](images/myfeaturephasogram.png)
+![image](images/myfeaturestartphasogram.png){:height="36px" width="36px"} ![image](images/myfeatureendphasogram.png){:height="36px" width="36px"}
 
 #### phasogram with context (--context)
-![image](images/myfeaturephasogram2.png)
+![image](images/myfeaturestartphasogram2.png) ![image](images/myfeatureendphasogram2.png)
 
 #### phasogram with gaussian smoothing (--GaussianSmoothing)
-![image](images/myfeaturephasogram2.png)
+![image](images/myfeaturestartphasogram3.png) ![image](images/myfeatureendphasogram3.png)
