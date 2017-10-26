@@ -33,6 +33,7 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--title", help="title text", type=str, default=None)
     parser.add_argument("-x", "--xax", help="x axis text", type=str, default="window, bp")
     parser.add_argument("-y", "--yax", help="y axis text", type=str, default="signal coverage")
+    parser.add_argument("-b", "--bigBed", help="bigBedFile, use to limit phasogram to specific regions", type=str, default=None)
 
     parser.add_argument("-v", "--verbosity", type=int, choices=[1,2,3],
                         help="increase output verbosity 1=error, 2=info, 3=debug")
@@ -57,27 +58,54 @@ if __name__ == "__main__":
     bw = pyBigWig.open(args.bigWig)
     for chrom in bw.chroms():
         logging.info('Reading sequence: {}'.format(chrom))
-        start = 0
-        while (start < bw.chroms(chrom)): 
-            stop = min(start+buffSize - 1, bw.chroms(chrom))
-            logging.info('Requesting values: {}:{}-{}'.format(chrom,start,stop))
-            values = bw.values(chrom, start, stop)
-            iStart = start
-            iEnd = stop
-          
-            for idx,val in enumerate(values):
-                if math.isnan(val) and iStart != None:
-                    iEnd = idx-1
+        if args.bigBed:
+            bb = pyBigWig.open(args.bigBed)
+            if chrom not in bb.chroms().keys():
+                continue
+            lEntries = bb.entries(chrom, 0, bw.chroms(chrom))
+            for entry in lEntries:
+                start = entry[0]
+                while (start < entry[1]):
+                    stop = min(start+buffSize - 1, entry[1])
+                    logging.info('Requesting values: {}:{}-{}'.format(chrom,start,stop))
+                    values = bw.values(chrom, start, stop)
+                    iStart = start
+                    iEnd = stop
+                    for idx,val in enumerate(values):
+                        if math.isnan(val) and iStart != None:
+                            iEnd = idx-1
+                            l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
+                            lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
+                            iStart = None
+                        elif not math.isnan(val) and iStart == None:
+                            iStart = idx
+                        else:
+                            iEnd = idx
                     l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
                     lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
-                    iStart = None
-                elif not math.isnan(val) and iStart == None:
-                    iStart = idx
-                else:
-                    iEnd = idx
-            l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
-            lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
-            start = stop + 1
+                    start = stop + 1
+        else:
+            start = 0
+            while (start < bw.chroms(chrom)): 
+                stop = min(start+buffSize - 1, bw.chroms(chrom))
+                logging.info('Requesting values: {}:{}-{}'.format(chrom,start,stop))
+                values = bw.values(chrom, start, stop)
+                iStart = start
+                iEnd = stop
+          
+                for idx,val in enumerate(values):
+                    if math.isnan(val) and iStart != None:
+                        iEnd = idx-1
+                        l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
+                        lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
+                        iStart = None
+                    elif not math.isnan(val) and iStart == None:
+                        iStart = idx
+                    else:
+                        iEnd = idx
+                l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
+                lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
+                start = stop + 1
 
 
     title = "phasogram of {}".format(args.bigWig)
