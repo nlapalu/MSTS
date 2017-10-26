@@ -93,6 +93,15 @@ class FeatureDB(SqliteDB):
 
         return lFeatures
 
+    def selectFeatureFromIdListAndType(self, chrom, lIds, featType):
+        """Select features from Id"""
+
+        lFeatures = []
+        cursor = self.conn.execute('''select id,seqid,source,type,start,end,score,strand,phase,attributes from feature where seqid = \'{}\' and id in ({}) and type = \'{}\''''.format(chrom, ",".join(['"{}"'.format(x) for x in lIds]),featType))
+        for row in cursor:
+            lFeatures.append(Feature(row[0],row[1],row[2],row[3],row[4],row[5],row[6],row[7],row[8],loads(row[9])))
+
+        return lFeatures
 
     def selectReferences(self):
         """Select All References"""

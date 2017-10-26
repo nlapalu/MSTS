@@ -86,7 +86,23 @@ def gaussianSmoothing(data, windowWidth=3, stdev=20):
 
         return smoothed
         
+def readFeatureIds(lIdsFile):
+    """Read feature Ids from file"""
 
+    lIds = []
+    try:
+        with open(lIdsFile, 'r') as f:
+            for line in f:
+                line = line.rstrip()
+                if line:
+                    lIds.append(line)
+        f.close()
+        logging.info("{} features to analyze".format(len(lIds)))
+    except Exception as e:
+        logging.error("Can not read feature file: {}".format(lIdsFile))
+        sys.exit(1)
+
+    return lIds
 
 if __name__ == "__main__":
 
@@ -117,10 +133,11 @@ if __name__ == "__main__":
     parser.add_argument("-s","--GaussianSmoothing", help="Perform Gaussian Smoothing on data, ", action="store_true", default=False)
     parser.add_argument("-w","--windowWidth", help="window size for Gaussian smoothing, default=3", type=int, default=3)
     parser.add_argument("-sd","--stdev", help="stdev for Gaussian smoothing, default=20", type=int, default=20)
-
-
+    parser.add_argument("--flush",help="print phases on stdout to save in file, > phases.out", action="store_true", default=False)
+    parser.add_argument("-l","--lIds", help="txt file with ID list (one ID per line), limit phasogram to the features specified in the file. Features must be of the same type as featureType", type=str, default=None)
     parser.add_argument("-v", "--verbosity", type=int, choices=[1,2,3],
                         help="increase output verbosity 1=error, 2=info, 3=debug")
+    
 
     args = parser.parse_args()
 
@@ -165,9 +182,17 @@ if __name__ == "__main__":
     lPhasesNb = [0]*(1+winBefore+winAfter)
     lOtherGenesNb = [0]*(1+winBefore+winAfter)
 
+    lIds = []
+    if args.lIds:
+        lIds = readFeatureIds(args.lIds)
+    #lIds = ['Avrlm3_Lema_T200610.1', 'lm_SuperContig_0_v2_lmctg_0007_v2_egn4_orf_Lema_T000020.1']    
+
     for chrom in db.selectReferences():
         logging.info('Requesting genes in sequence: {}'.format(chrom))
-        lFeatures = db.selectFeatureTypeFromReference(chrom,featType)
+        if len(lIds) > 0:
+            lFeatures = db.selectFeatureFromIdListAndType(chrom, lIds, featType)
+        else:
+            lFeatures = db.selectFeatureTypeFromReference(chrom, featType)
         for feat in lFeatures:
             if feat.strand == 1:
                 if pivot == 'start':
@@ -285,3 +310,6 @@ if __name__ == "__main__":
     else:
         Graphics.plotDistributionWithGeneHistogram([x for x in range(-winBefore,winAfter+1)],lAveragePhases[0:(winBefore+winAfter+1)],lPhasesNb[0:(winBefore+winAfter+1)],lOtherGenesNb[0:(winBefore+winAfter+1)],out=args.out, title=args.title, xax=args.xax, yax=args.yax, yax2=args.zax)
 
+    if args.flush:
+        for x in range(0,winBefore+winAfter+1):
+            print "{}\t{}".format(x-winBefore,lAveragePhases[x])

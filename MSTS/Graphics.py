@@ -81,6 +81,8 @@ class Graphics(object):
         ax1.plot(lXs,lZOthers)
         lZmin = [0] * len(lZs)
         ax1.vlines(lXs,lZmin,lZOthers, colors='grey', alpha=0.15)
+        if max(lZOthers) <= 0:
+            ax1.set_ylim(0,1)
         ax1.set_xlim(lXs[0],lXs[-1])
         lZmax = lZs
         lZmin2 = [300] * len(lZs)
