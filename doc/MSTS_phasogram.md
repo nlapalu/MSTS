@@ -23,6 +23,7 @@ or
 | `-t, --title` | title text |
 | `-x, --xax` | x axis text |
 | `-y, --yax` | y axis text |
+| `-b, --bigBed` | bigBedFile, use to limit phasogram to specific regions |
 | `-v, --verbosity` | increase output verbosity 1=error, 2=info, 3=debug |
 | `--version` | tool suite version |
 | `-h, --help` | help message |
