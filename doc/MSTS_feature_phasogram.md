@@ -30,6 +30,8 @@ or
 | `-s, --GaussianSmoothing` | Perform Gaussian Smoothing on data |
 | `-w, --windowWidth` | window size for Gaussian smoothing, default=3 |
 | `-sd, --stdev` | stdev for Gaussian smoothing, default=20 |
+| `--flush` | print phases on stdout to save in file, like > phases.out | 
+|  `-l, --lIds` | txt file with ID list (one ID per line), limit phasogram to the features specified in the file. Features must be of the same type as featureType |
 | `-v, --verbosity` | increase output verbosity 1=error, 2=info, 3=debug |
 | `--version` | tool suite version |
 | `-h, --help` | help message |
