@@ -76,6 +76,7 @@ then:
 * [MSTS_converter.py](doc/MSTS_converter.md)
 * [MSTS_phasogram.py](doc/MSTS_phasogram.md)
 * [MSTS_feature_phasogram.py](doc/MSTS_feature_phasogram.md)
+* [MSTS_count_TPM.py](doc/MSTS_count_TPM.md)
 
 ## References
 
