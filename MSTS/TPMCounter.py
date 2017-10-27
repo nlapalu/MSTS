@@ -101,7 +101,7 @@ class TPMCounter(object):
         dEffectiveLenghtTranscripts = {}
         for gene in GffParser.getAllGenes():
             for t in gene.lTranscripts:
-                effectiveLen = max(1, t.getCDSTotalLength() - meanFragLength + 1)
+                effectiveLen = max(meanFragLength, t.getCDSTotalLength() - meanFragLength + 1)
                 dLengthTranscripts[t.id] = t.getCDSTotalLength()
                 dEffectiveLenghtTranscripts[t.id] = effectiveLen
 
