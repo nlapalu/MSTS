@@ -14,19 +14,41 @@ class Graphics(object):
         pass
 
     @staticmethod
-    def plotDistribution(lXs, lYs, out="", title="", xax="", yax=""):
+    def plotDistribution(lXs, lYs, out="", title="", xax="", yax="", color="blue", legend=""):
         """Draw a simple Distribution"""
 
         fig = plt.Figure(figsize=(20,20))
         fig.suptitle(title, fontsize=32)
         ax = fig.add_subplot(111)
-        ax.plot(lXs,lYs)
+        ax.plot(lXs,lYs, color=color)
+        if legend:
+            ax.legend(legend)
         axis_font = {'size':'28'}
         ax.set_xlabel(xax, **axis_font)
         ax.set_ylabel(yax, **axis_font)
         ax.tick_params(labelsize=20)
         canvas = FigureCanvasAgg(fig)
         canvas.print_figure(out, dpi=80)
+
+
+    @staticmethod
+    def plotMultiDistribution(lXs, llYs, out="", title="", xax="", yax="", color=['blue','green'],legend=""):
+        """Draw multi Distributions"""
+
+        fig = plt.Figure(figsize=(20,20))
+        fig.suptitle(title, fontsize=32)
+        ax = fig.add_subplot(111)
+        for i,val in enumerate(llYs):
+            ax.plot(lXs,val,color=color[i])
+        axis_font = {'size':'28'}
+        ax.set_xlabel(xax, **axis_font)
+        ax.set_ylabel(yax, **axis_font)
+        ax.tick_params(labelsize=20)
+        if legend:
+            ax.legend(legend)
+        canvas = FigureCanvasAgg(fig)
+        canvas.print_figure(out, dpi=80)
+
 
     @staticmethod
     def plotDistributionWithRegression(lXs, lYs, rXs, rYs, slope, intercept, R2, pval, meanPhase, stdvPhase,out="", title="", xax="", yax=""):
@@ -99,4 +121,39 @@ class Graphics(object):
         ax2.set_ylabel(yax, **axis_font)
         canvas = FigureCanvasAgg(fig)
         canvas.print_figure(out, dpi=80)
+
+
+    @staticmethod
+    def plotAutocorrelation(lXs, lYs, out="out.png", title="title", xax="xax", yax="yax"):
+        """Draw autocorrelation plot, return list of autocorrelation coefficients"""
+
+        print len(lXs)
+        print len(lYs)
+        lRhs = []
+        Ym = np.mean(lYs)
+        N = len(lYs)
+        C0 = 0.0
+        for i in lYs:
+            C0 += (i-Ym)*(i-Ym)
+        C0 = C0/N
+        for i in range(0,N):
+            Ch = 0.0
+            for j in range(0,(N-i-1)):
+                Ch += (lYs[j]-Ym)*(lYs[j+i]-Ym)
+            Ch = Ch/N
+            lRhs.append(Ch/C0)
+        print len(lRhs)
+
+        fig = plt.Figure(figsize=(20,20))
+        fig.suptitle(title, fontsize=32)
+        ax = fig.add_subplot(111)
+        ax.plot(lXs,lRhs)
+        axis_font = {'size':'28'}
+        ax.set_xlabel(xax, **axis_font)
+        ax.set_ylabel(yax, **axis_font)
+        ax.tick_params(labelsize=20)
+        canvas = FigureCanvasAgg(fig)
+        canvas.print_figure(out, dpi=80)
+
+        return lRhs
 
