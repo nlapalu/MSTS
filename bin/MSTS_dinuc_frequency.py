@@ -55,7 +55,9 @@ if __name__ == '__main__':
     parser.add_argument("--pFreqNormMix",help="print AT and GC Normalized frequencies on single plot", action="store_true", default=False)
     parser.add_argument("--pAutocor",help="print AT and GC autocorrelation plots", action="store_true", default=False)
     parser.add_argument("--pAutocorMix",help="print AT and GC autocorrelation on single plot", action="store_true", default=False)
-    parser.add_argument("-b","--buffer", help="size of chunk (nb sequences) to keep in memory before analyze", type=int, default=1000000)
+    parser.add_argument("-ami","--autocorMin", help="start for autocorrelation analysis", type=int, default=5)
+    parser.add_argument("-amx","--autocorMax", help="stop for autocorrelation analysis", type=int, default=35)
+    parser.add_argument("-b","--buffer", help="size of chunk (nb sequences) to keep in memory before analysis", type=int, default=1000000)
     parser.add_argument("-v", "--verbosity", type=int, choices=[1,2,3],
                         help="increase output verbosity 1=error, 2=info, 3=debug")
 
@@ -70,6 +72,13 @@ if __name__ == '__main__':
         logLevel = 'DEBUG'
     logging.getLogger().setLevel(logLevel)
 
+    if args.autocorMin < -args.distance:
+        logging.error("autcorMin value too small: {}, minimum is: {}".args.autocorMin, -args.distance)
+        sys.exit(1) 
+    if args.autocorMax > args.distance:
+        logging.error("autcorMax value too high: {}, maximum is: {}".args.autocorMax, args.distance)
+        sys.exit(1) 
+
 
     lFreqATs = [0.0]*(args.distance*2+1)
     lFreqGCs = [0.0]*(args.distance*2+1)
@@ -80,8 +89,8 @@ if __name__ == '__main__':
     bb = pyBigWig.open(args.BigBedFile)
     sequences = Fasta(args.FastaFile)
     for seq in sequences.keys():
-        if nb == 50000:
-            break
+#        if nb == 50000:
+#            break
         logging.info('Retrieving sequences in: {}'.format(seq))
         if seq not in bb.chroms().keys():
             continue
@@ -108,8 +117,8 @@ if __name__ == '__main__':
             if not nb%buffSize:
                 logging.info("Computing frequencies, nb sequences: {}".format(nb))
                
-            if nb == 50000:
-                break
+#            if nb == 50000:
+#                break
 
     if nbEntries > 0:
         lATs,lGCs = CMSTS.dinucfrequency(args.distance,lEntriesToAnalyze)
@@ -143,12 +152,11 @@ if __name__ == '__main__':
     if args.pFreqNormMix:
         Graphics.plotMultiDistribution(range(-args.distance+1,args.distance),[lFreqATNormalized[1:-1],lFreqGCNormalized[1:-1]],out="{}ATGCNormalized.png".format(args.prefix),title="Normalized frequency of dinucleotides", xax="position in bp", yax="Normalized frequency",legend=["AA/AT/TA/TT","GG/GC/CG/CC"],color=['blue','green'])
     if args.pAutocor or args.pAutocorMix:
-        lRhAT = autocorrelation(range(0,60),lFreqATs[5:65])
-        lRhGC = autocorrelation(range(0,60),lFreqGCs[5:65])
+        lRhAT = autocorrelation(range(0,args.autocorMax-args.autocorMin),lFreqATs[args.autocorMin+args.distance:args.autocorMax+args.distance])
+        lRhGC = autocorrelation(range(0,args.autocorMax-args.autocorMin),lFreqGCs[args.autocorMin+args.distance:args.autocorMax+args.distance])
         if args.pAutocor: 
-        #Graphics.plotAutocorrelation(range(10,70),lFreqATs[80:140])
-            Graphics.plotDistribution(range(5,65),lRhAT,out="{}ATAutocorrelation.png".format(args.prefix))
-            Graphics.plotDistribution(range(5,65),lRhGC,out="{}GCAutocorrelation.png".format(args.prefix))
+            Graphics.plotDistribution(range(args.autocorMin,args.autocorMax),lRhAT,out="{}ATAutocorrelation.png".format(args.prefix))
+            Graphics.plotDistribution(range(args.autocorMin,args.autocorMax),lRhGC,out="{}GCAutocorrelation.png".format(args.prefix))
         if args.pAutocorMix:
-            Graphics.plotMultiDistribution(range(5,65),[lRhAT,lRhGC],out="{}ATGCAutocorrelation.png".format(args.prefix),legend=["AA/AT/TA/TT","GG/GC/CG/CC"],color=['blue','green'])
+            Graphics.plotMultiDistribution(range(args.autocorMin,args.autocorMax),[lRhAT,lRhGC],out="{}ATGCAutocorrelation.png".format(args.prefix),legend=["AA/AT/TA/TT","GG/GC/CG/CC"],color=['blue','green'])
         pass  
