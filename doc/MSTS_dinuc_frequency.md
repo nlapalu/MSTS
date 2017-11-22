@@ -17,8 +17,8 @@ or
 
 | Argument | Description |
 | --------- | ----------- |
-| FastaFile | genome in fasta format |
-| BigBedFile | nucleosome positions/centers in bigBed file |
+| `FastaFile` | genome in fasta format |
+| `BigBedFile` | nucleosome positions/centers in bigBed file |
 
 ### Options:
 
@@ -42,7 +42,7 @@ or
 
 ## Inputs:
 
-Fastafile is your assembly/genome in fasta format. The bigBed file contains nucleosome positions or read positions obtain from mapping. In case of paired end reads, positions are the fragment between R1 and R2 (see MSTS_converter.py). In case of single reads, you have to extend your reads from 5' to 3' up to 147 bp to fit with the nucleosome size (see MSTS_converter.py,not yet implemented).
+Fastafile is your assembly/genome in fasta format. The bigBed file contains nucleosome positions or read positions obtained from mapping. In case of paired end reads, positions are the fragment between R1 and R2 (see MSTS_converter.py). In case of single reads, you have to extend your reads from 5' to 3' up to 147 bp to fit with the nucleosome size (see MSTS_converter.py,not yet implemented).
 
 ## Outputs:
 
