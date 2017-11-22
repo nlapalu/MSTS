@@ -27,7 +27,7 @@ def autocorrelation(lXs,lYs):
             Ch += (lYs[j]-Ym)*(lYs[j+i]-Ym)
         Ch = Ch/N
         lRhs.append(Ch/C0)
-    print len(lRhs)
+    #print len(lRhs)
     return lRhs
 
 
@@ -53,8 +53,8 @@ if __name__ == '__main__':
     parser.add_argument("-p","--prefix", help="prefix use for plot file output name", type=str, default="freq")
     parser.add_argument("--pFreqNorm",help="print AT and GC Normalized frequencies plots", action="store_true", default=False)
     parser.add_argument("--pFreqNormMix",help="print AT and GC Normalized frequencies on single plot", action="store_true", default=False)
-    parser.add_argument("--pAutocor",help="print AT and GC autocorrelation plots", action="store_true", default=False)
-    parser.add_argument("--pAutocorMix",help="print AT and GC autocorrelation on single plot", action="store_true", default=False)
+    parser.add_argument("--pAutocor",help="print AT and GC correlograms", action="store_true", default=False)
+    parser.add_argument("--pAutocorMix",help="print AT and GC autocorrelations on a single correlogram", action="store_true", default=False)
     parser.add_argument("-ami","--autocorMin", help="start for autocorrelation analysis", type=int, default=5)
     parser.add_argument("-amx","--autocorMax", help="stop for autocorrelation analysis", type=int, default=35)
     parser.add_argument("-b","--buffer", help="size of chunk (nb sequences) to keep in memory before analysis", type=int, default=1000000)
@@ -130,33 +130,41 @@ if __name__ == '__main__':
 
     lFreqATs = [ x/nb for x in lFreqATs ]
     lFreqGCs = [ x/nb for x in lFreqGCs ]
-    ATmean = np.mean(lFreqATs)
-    GCmean = np.mean(lFreqGCs)
+    ATmean = np.mean(lFreqATs[1:-1])
+    GCmean = np.mean(lFreqGCs[1:-1])
 
     lFreqATNormalized = [x/ATmean for x in lFreqATs]
     lFreqGCNormalized = [x/GCmean for x in lFreqGCs]
 
-    logging.info('{} positions analyzed'.format(nb))
+    lFreqATs[0] = "NaN"
+    lFreqGCs[0] = "NaN"
+    lFreqATNormalized[0] = "NaN"
+    lFreqGCNormalized[0] = "NaN"
+    lFreqATs[-1] = "NaN"
+    lFreqGCs[-1] = "NaN"
+    lFreqATNormalized[-1] = "NaN"
+    lFreqGCNormalized[-1] = "NaN"
+
+    logging.info('{} entries analyzed'.format(nb))
 
     if args.flush:
-        print "pos\tATfreq\tGCfreq\ATfreqNorm\tGCfreqNorm"
-        for i in range(0,2*args.distance+1):
-            print "{}\t{}\t{}\t{}".format(lFreqATs[i],lFreqGCs[i],lFreqATNormalized,lFreqGCNormalized)
+        print "pos\tATfreq\tGCfreq\tATfreqNorm\tGCfreqNorm"
+        for i in range(-args.distance,args.distance+1):
+            print "{}\t{}\t{}\t{}\t{}".format(i,lFreqATs[i+args.distance],lFreqGCs[i+args.distance],lFreqATNormalized[i+args.distance],lFreqGCNormalized[i+args.distance])
 
     if args.pFreq:
-        Graphics.plotDistribution(range(-args.distance+1,args.distance),lFreqATs[1:-1],out="{}AT.png".format(args.prefix), title="Frequency of dinucleotides AA,AT,TA,TT", xax="position in bp", yax="frequency", legend=["AA/AT/TA/TT"])
-        Graphics.plotDistribution(range(-args.distance+1,args.distance),lFreqGCs[1:-1],out="{}GC.png".format(args.prefix), title="Frequency of dinucleotides GG,GC,CG,CC", xax="position in bp", yax="frequency", color='green', legend=["GG/GC/CG/CC"])
+        Graphics.plotDistribution(range(-args.distance+1,args.distance),lFreqATs[1:-1],out="{}_AT.png".format(args.prefix), title="Frequency of dinucleotides AA,AT,TA,TT", xax="position in bp", yax="frequency", legend=["AA/AT/TA/TT"])
+        Graphics.plotDistribution(range(-args.distance+1,args.distance),lFreqGCs[1:-1],out="{}_GC.png".format(args.prefix), title="Frequency of dinucleotides GG,GC,CG,CC", xax="position in bp", yax="frequency", color='green', legend=["GG/GC/CG/CC"])
     if args.pFreqNorm:
-        Graphics.plotDistribution(range(-args.distance+1,args.distance),lFreqATNormalized[1:-1],out="{}ATNormalized.png".format(args.prefix),title="Normalized frequency of dinucleotides AA,AT,TA,TT", xax="position in bp", yax="Normalized frequency", legend=["AA/AT/TA/TT"])
-        Graphics.plotDistribution(range(-args.distance+1,args.distance),lFreqGCNormalized[1:-1],out="{}GCNormalized.png".format(args.prefix),title="Normalized frequency of dinucleotides GG,GC,CG,CC", xax="position in bp", yax="Normalized frequency", color='green', legend=["GG/GC/CG/CC"])
+        Graphics.plotDistribution(range(-args.distance+1,args.distance),lFreqATNormalized[1:-1],out="{}_AT_Normalized.png".format(args.prefix),title="Normalized frequency of dinucleotides AA,AT,TA,TT", xax="position in bp", yax="Normalized frequency", legend=["AA/AT/TA/TT"])
+        Graphics.plotDistribution(range(-args.distance+1,args.distance),lFreqGCNormalized[1:-1],out="{}_GC_Normalized.png".format(args.prefix),title="Normalized frequency of dinucleotides GG,GC,CG,CC", xax="position in bp", yax="Normalized frequency", color='green', legend=["GG/GC/CG/CC"])
     if args.pFreqNormMix:
-        Graphics.plotMultiDistribution(range(-args.distance+1,args.distance),[lFreqATNormalized[1:-1],lFreqGCNormalized[1:-1]],out="{}ATGCNormalized.png".format(args.prefix),title="Normalized frequency of dinucleotides", xax="position in bp", yax="Normalized frequency",legend=["AA/AT/TA/TT","GG/GC/CG/CC"],color=['blue','green'])
+        Graphics.plotMultiDistribution(range(-args.distance+1,args.distance),[lFreqATNormalized[1:-1],lFreqGCNormalized[1:-1]],out="{}_ATGC_Normalized.png".format(args.prefix),title="Normalized frequency of dinucleotides", xax="position in bp", yax="Normalized frequency",legend=["AA/AT/TA/TT","GG/GC/CG/CC"],color=['blue','green'])
     if args.pAutocor or args.pAutocorMix:
         lRhAT = autocorrelation(range(0,args.autocorMax-args.autocorMin),lFreqATs[args.autocorMin+args.distance:args.autocorMax+args.distance])
         lRhGC = autocorrelation(range(0,args.autocorMax-args.autocorMin),lFreqGCs[args.autocorMin+args.distance:args.autocorMax+args.distance])
         if args.pAutocor: 
-            Graphics.plotDistribution(range(args.autocorMin,args.autocorMax),lRhAT,out="{}ATAutocorrelation.png".format(args.prefix))
-            Graphics.plotDistribution(range(args.autocorMin,args.autocorMax),lRhGC,out="{}GCAutocorrelation.png".format(args.prefix))
+            Graphics.plotDistribution(range(args.autocorMin,args.autocorMax),lRhAT,out="{}_AT_Correlogram.png".format(args.prefix),title="autocorrelation of dinucleotides AA,AT,TA,TT", xax="position in bp", yax="Rh, autocorrelation coefficient", legend=["AA/AT/TA/TT"])
+            Graphics.plotDistribution(range(args.autocorMin,args.autocorMax),lRhGC,out="{}_GC_Correlogram.png".format(args.prefix),title="autocorrelation of dinucleotides GG,GC,CG,CC", xax="position in bp", yax="Rh, autocorrelation coefficient", color='green', legend=["GG/GC/CG/CC"])
         if args.pAutocorMix:
-            Graphics.plotMultiDistribution(range(args.autocorMin,args.autocorMax),[lRhAT,lRhGC],out="{}ATGCAutocorrelation.png".format(args.prefix),legend=["AA/AT/TA/TT","GG/GC/CG/CC"],color=['blue','green'])
-        pass  
+            Graphics.plotMultiDistribution(range(args.autocorMin,args.autocorMax),[lRhAT,lRhGC],out="{}_ATGC_Correlogram.png".format(args.prefix),title="autocorrelation of dinucleotides", xax="position in bp", yax="Rh, autocorrelation coefficient",legend=["AA/AT/TA/TT","GG/GC/CG/CC"],color=['blue','green'])
