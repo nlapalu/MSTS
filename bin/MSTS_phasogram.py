@@ -50,7 +50,7 @@ if __name__ == "__main__":
     logging.getLogger().setLevel(logLevel)
 
     lPhases = [0]*args.window
-    buffSize = 10000000
+    buffSize = 1000000
     debug = 0
 
     logging.info('Buffer size: {} bases'.format(buffSize))
@@ -65,47 +65,57 @@ if __name__ == "__main__":
             lEntries = bb.entries(chrom, 0, bw.chroms(chrom))
             for entry in lEntries:
                 start = entry[0]
+                loop = 0
                 while (start < entry[1]):
-                    stop = min(start+buffSize - 1, entry[1])
+                    stop = min(start+buffSize, entry[1])
                     logging.info('Requesting values: {}:{}-{}'.format(chrom,start,stop))
                     values = bw.values(chrom, start, stop)
-                    iStart = start
-                    iEnd = stop
+                    iStart = 0
+                    iEnd = len(values)
                     for idx,val in enumerate(values):
                         if math.isnan(val) and iStart != None:
-                            iEnd = idx-1
-                            l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
-                            lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
+                            iEnd = idx
+                            if len(values[iStart:iEnd]) > args.window:
+                                l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
+                                lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
                             iStart = None
                         elif not math.isnan(val) and iStart == None:
                             iStart = idx
                         else:
                             iEnd = idx
-                    l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
-                    lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
-                    start = stop + 1
+                    if iStart != None: 
+                        if len(values[iStart:iEnd]) > args.window:
+                            l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
+                            lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
+                    loop+=1
+                    start = stop
         else:
             start = 0
+            loop = 0
             while (start < bw.chroms(chrom)): 
-                stop = min(start+buffSize - 1, bw.chroms(chrom))
+                stop = min(start+buffSize, bw.chroms(chrom))
                 logging.info('Requesting values: {}:{}-{}'.format(chrom,start,stop))
                 values = bw.values(chrom, start, stop)
-                iStart = start
-                iEnd = stop
-          
+                iStart = 0
+                iEnd = len(values)
+
                 for idx,val in enumerate(values):
-                    if math.isnan(val) and iStart != None:
-                        iEnd = idx-1
-                        l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
-                        lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
+                    if math.isnan(val) and iStart != None :
+                        iEnd = idx
+                        if len(values[iStart:iEnd]) > args.window:
+                            l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
+                            lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
                         iStart = None
                     elif not math.isnan(val) and iStart == None:
                         iStart = idx
                     else:
                         iEnd = idx
-                l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
-                lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
-                start = stop + 1
+                if iStart != None: 
+                    if len(values[iStart:iEnd]) > args.window:
+                        l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
+                        lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
+                loop+=1
+                start = stop
 
 
     title = "phasogram of {}".format(args.bigWig)
