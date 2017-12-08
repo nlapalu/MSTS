@@ -114,7 +114,7 @@ class Graphics(object):
         ax3.plot(lXs,lYs)
         ax2.set_xlim(lXs[0],lXs[-1])
         ax2.set_ylim(0,max(lZs)+int(max(lZs)*0.05))
-        ax3.set_ylim(min(lYs)-1,max(lYs)+1)
+        #ax3.set_ylim(min(lYs)-1,max(lYs)+1)
         axis_font = {'size':'28'}
         ax2.set_xlabel(xax, **axis_font)
         ax3.set_ylabel(yax2, **axis_font)

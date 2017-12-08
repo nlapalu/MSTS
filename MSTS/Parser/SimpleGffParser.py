@@ -22,7 +22,7 @@ class SimpleGffParser(object):
         try:
             self.filehandle = open(self.inputGffFile, 'r')
         except Exception as e:
-            logging.error(e.message)
+            logging.error(e)
             sys.exit(1)
 
     def __del__(self):

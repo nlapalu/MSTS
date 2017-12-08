@@ -6,6 +6,7 @@ import time
 import argparse
 import pyBigWig
 import math
+import numpy as np
 
 from MSTS.version import __version__
 from MSTS.Parser.SimpleGffParser import SimpleGffParser
@@ -80,9 +81,16 @@ def gaussianSmoothing(data, windowWidth=3, stdev=20):
             filter[i] /=sumt
 
         smoothed = [0]*len(data)
-        for i in range(0,len(smoothed)-len(filter)):
+        ltmp = [0.0]*(windowWidth*stdev)
+        data.extend(ltmp)
+        ltmp.extend(data)
+        data = ltmp
+
+        for i in range(0,len(smoothed)):
             for j in range(0,len(filter)):
                 smoothed[i] += data[i + j] * filter[j]
+        smoothed[0:windowWidth*stdev] = [None]*(windowWidth*stdev)
+        smoothed[-(windowWidth*stdev):] = [None]*(windowWidth*stdev)
 
         return smoothed
         
@@ -305,7 +313,7 @@ if __name__ == "__main__":
 
     if args.GaussianSmoothing:
 
-        Graphics.plotDistributionWithGeneHistogram([x for x in range(-winBefore,winAfter+1-lenFilter)],lAveragePhases[0:(winBefore+winAfter+1-lenFilter)],lPhasesNb[0:(winBefore+winAfter+1-lenFilter)],lOtherGenesNb[0:(winBefore+winAfter+1-lenFilter)],out=args.out, title=args.title, xax=args.xax, yax=args.yax, yax2=args.zax)
+        Graphics.plotDistributionWithGeneHistogram([x for x in range(-winBefore,winAfter+1)],lAveragePhases[0:(winBefore+winAfter+1)],lPhasesNb[0:(winBefore+winAfter+1)],lOtherGenesNb[0:(winBefore+winAfter+1)],out=args.out, title=args.title, xax=args.xax, yax=args.yax, yax2=args.zax)
 
     else:
         Graphics.plotDistributionWithGeneHistogram([x for x in range(-winBefore,winAfter+1)],lAveragePhases[0:(winBefore+winAfter+1)],lPhasesNb[0:(winBefore+winAfter+1)],lOtherGenesNb[0:(winBefore+winAfter+1)],out=args.out, title=args.title, xax=args.xax, yax=args.yax, yax2=args.zax)
