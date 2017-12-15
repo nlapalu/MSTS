@@ -3,12 +3,21 @@
 import math
 import numpy as np
 import matplotlib
+
+#matplotlib.use('Agg')
+ 
 import matplotlib.pyplot as plt
 
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib import gridspec
 
+from scipy.cluster.hierarchy import dendrogram
+from scipy.stats import variation
+
 class Graphics(object):
+
+
+    lColors = ['palevioletred','darkorchid','royalblue','darkturquoise','mediumspringgreen','olivedrab','gold','sandybrown','red','silver','m','blue','lightseagreen','chartreuse','darkkhaki','bisque','sienna','firebrick','gray','plum','darkcyan','darkgreen','orange','lightcoral','yellow']
 
     def __init__(self):
         pass
@@ -121,6 +130,111 @@ class Graphics(object):
         ax2.set_ylabel(yax, **axis_font)
         canvas = FigureCanvasAgg(fig)
         canvas.print_figure(out, dpi=80)
+
+
+    @staticmethod
+    def plotDistributionWithLimits(lXs, llYs, lKClassif,out="out.png", title="title", xax="xax", yax="yax",legend=""):
+        """Draw distributions with upper and lower limits"""
+
+        fig = plt.Figure(figsize=(40,20))
+        fig.suptitle(title, fontsize=32)
+        nbPlots = len(llYs)
+        sqrt = int(math.ceil(math.sqrt(nbPlots)))
+        ymax = 0.0
+        for val in llYs:
+            ymax = max(max(val[0]),ymax)
+            ymaxCurrent = max(max(val[2]),ymax)
+        ymax = ymax*1.05
+        xmax = 147
+        gs = gridspec.GridSpec(1,2) 
+        ax = fig.add_subplot(gs[0])
+        gsLimit = gridspec.GridSpecFromSubplotSpec(sqrt,sqrt, subplot_spec=gs[1])
+        for i,val in enumerate(llYs):
+            ax.plot(lXs,val[0],color=Graphics.lColors[i])
+            axCurrent = fig.add_subplot(gsLimit[i]) 
+            axCurrent.fill_between(lXs, val[1], val[2], alpha=0.35, edgecolor='black', facecolor=Graphics.lColors[i])
+            axCurrent.set_title("Cluster K{}, (position: {})".format(i,lKClassif[i]))
+            axCurrent.fill_between(lXs, val[3], val[4], alpha=0.85, edgecolor='darkgray', facecolor='lightgray')
+            axCurrent.plot(lXs,val[0],color=Graphics.lColors[i])
+            axCurrent.set_ylim(0,ymaxCurrent)
+            axCurrent.set_xlim(1,xmax)
+            axCurrent.text(10, ymaxCurrent*0.90, "#nucleosomes: {}".format(legend[i]), fontsize=12)
+        axis_font = {'size':'28'}
+        ax.set_ylim(0,ymax)
+        ax.set_xlim(1,xmax)
+        ax.legend(["K{}".format(x) for x in range(0,nbPlots)])
+        ax.set_title("all nucleosomes", **axis_font)
+        ax.set_xlabel(xax, **axis_font)
+        ax.set_ylabel(yax, **axis_font)
+        ax.tick_params(labelsize=20)
+        canvas = FigureCanvasAgg(fig)
+        canvas.print_figure(out, dpi=80)
+
+
+    @staticmethod
+    def plotDistributionWithLimitsOld(lXs, llYs ,out="out.png", title="title", xax="xax", yax="yax",legend=""):
+        """Draw distributions with upper and lower limits"""
+
+        fig = plt.Figure(figsize=(40,20))
+        fig.suptitle(title, fontsize=32)
+        nbPlots = len(llYs)
+        sqrt = int(math.ceil(math.sqrt(nbPlots)))
+        ymax = 0.0
+        for val in llYs:
+            ymax = max(max(val[0]),ymax)
+            ymaxCurrent = max(max(val[2]),ymax)
+        ymax = ymax*1.05
+        xmax = 147
+        gs = gridspec.GridSpec(1,2) 
+        ax = fig.add_subplot(gs[0])
+        gsLimit = gridspec.GridSpecFromSubplotSpec(sqrt,sqrt, subplot_spec=gs[1])
+        for i,val in enumerate(llYs):
+            ax.plot(lXs,val[0],color=Graphics.lColors[i])
+            ax.set_ylim(0,ymax)
+            ax.set_xlim(1,xmax)
+            axCurrent = fig.add_subplot(gsLimit[i]) 
+            axCurrent.fill_between(lXs, val[1], val[2], alpha=0.35, edgecolor='black', facecolor=Graphics.lColors[i])
+            for j in val[3:]:
+                axCurrent.plot(lXs,j,color='lightgray')
+            axCurrent.plot(lXs,val[0],color=Graphics.lColors[i])
+            axCurrent.set_ylim(0,ymaxCurrent)
+            axCurrent.set_xlim(1,xmax)
+#            CV = variation(val[0])
+#            axCurrent.text(60, ymaxCurrent*0.7, "CV = {}".format(CV), fontsize=10)
+        axis_font = {'size':'28'}
+        ax.set_xlabel(xax, **axis_font)
+        ax.set_ylabel(yax, **axis_font)
+        ax.tick_params(labelsize=20)
+        if legend:
+            ax.legend(legend)
+        canvas = FigureCanvasAgg(fig)
+        canvas.print_figure(out, dpi=80)
+
+
+    @staticmethod
+    def plotHierarchicalClustering(lXs,distance,out="hierarchical_clustering.png", title="", xax="xax", yax="yax"):
+        """Draw hierarchical clustering"""
+
+        #fig = plt.Figure(figsize=(20,20))
+        fig = plt.Figure()
+        fig.suptitle(title, fontsize=32)
+        ax = fig.add_subplot(111)
+        dendrogram(
+            lXs,
+            leaf_rotation=90.,  # rotates the x axis labels
+            leaf_font_size=8.,  # font size for the x axis labels
+            color_threshold=distance,
+            distance_sort='ascending'
+            #distance_sort='descending'
+        )
+        axis_font = {'size':'28'}
+        ax.set_xlabel(xax, **axis_font)
+        ax.set_ylabel(yax, **axis_font)
+        ax.tick_params(labelsize=20)
+        plt.show()
+#        plt.savefig(out,dpi=80, format='png', bbox_inches='tight')
+#        canvas = FigureCanvasAgg(fig)
+#        canvas.print_figure(out, dpi=80)
 
 
     @staticmethod
