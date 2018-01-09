@@ -10,12 +10,19 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BI
 
 * samtools
 * wigToBigWig (Kent's tools)
+* bedToBigBed (Kent's tools)
 
 ## Install  (DEV mode !!!)
 
 ### Prerequesites:
 
-TODO
+* numpy
+* scipy
+* scikit-learn
+* fastcluster (http://danifold.net/fastcluster.html)
+* matplotlib
+* pysam
+* pyBigWig
 
 ### Download
 
@@ -45,13 +52,7 @@ some comments on mapping step ...
 
 some comments on quality criteria and metrics / graph to control quality
 
-### Single reads
-
-not fully supported at this time
-
-### Paired reads
-
-#### convert your mapping file
+#### Convert your mapping file
 
 Be sure your mapping file is sorted and indexing, if not:
 
@@ -61,17 +62,23 @@ Be sure your mapping file is sorted and indexing, if not:
 
 then:
 
+#### For single reads
+
+`MSTS_converter.py mapping.sorted.bam -m single-expanded -p mapping -g assembly.genome --wig --size`
+
+#### For paired reads
+
 `MSTS_converter.py mapping.sorted.bam -m fragment-middle -w 20 -p mapping -g assembly.genome --wig --size`
 
-#### convert wig file to bigWig file
+### Convert wig file to bigWig file
 
 `wigToBigWig mapping.wig assembly.genome mapping.bw`
 
-#### draw a phasogram 
+### Draw a phasogram 
 
 `MSTS_phasogram.py mapping.bw -w 1200 -o mapping.phasogram.png -t "phasogram - mapping" -v 2 --flush --regression > mapping.phaso`
 
-#### analyze relation between Transcript Expression level and nucleosome occupancy
+### Analyze relation between Transcript Expression level and nucleosome occupancy
 
 If you have RNA-Seq data and MAINE-Seq data, you could draw phasograms with intervals of expression levels
 

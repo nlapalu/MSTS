@@ -145,8 +145,13 @@ if __name__ == "__main__":
 
     program = sys.argv[0]
     version = __version__
-    description = 'todo, \
-                   ...'
+    description = 'This tool detects and classifies nucleosomes from a bigWig \
+                   file. First, It performs a gaussian smoothing on the data. Then It launches two \
+                   clustering steps: 1/ a hierarchical clustering, done in several iterations with \
+                   random subsets of data. This step defined the most probable number of clusters \
+                   expected 2/ a KMeans clustering on all data with the previously defined number \
+                   of cluster. \
+                   Clusters are then exported in several formats (bed, wig).'
 
     parser = argparse.ArgumentParser(prog=program)
     parser = argparse.ArgumentParser(description=description)
@@ -161,8 +166,8 @@ if __name__ == "__main__":
     parser.add_argument("--wig", help="output wig file", action="store_true", default=False)
     parser.add_argument("--bed", help="output bed files per cluster", action="store_true", default=False)
     parser.add_argument("-df","--distanceFactor", help="factor used to compute distance when iterating with hierarchical clustering, (factor_distance X max(distances)  default=0.3, range[0.1-0.9]", type=float, default=0.3)
-    parser.add_argument("-nbi","--nbIterations", help="nb iteration for hierarchical clustering", type=int, default=500)
-    parser.add_argument("-nbn","--nbNucHC", help="nb nucleosomes to sample for hierarchical clustering", type=int, default=2000)
+    parser.add_argument("-nbi","--nbIterations", help="nb iteration for hierarchical clustering, default=500", type=int, default=500)
+    parser.add_argument("-nbn","--nbNucHC", help="nb nucleosomes to sample for hierarchical clustering, default=2000", type=int, default=2000)
     parser.add_argument("-t", "--title", help="title text", type=str, default="Nucleosome profil clustering")
     parser.add_argument("-x", "--xax", help="x axis text", type=str, default="window bp")
     parser.add_argument("-y", "--yax", help="y axis text", type=str, default="proportion, %")
@@ -325,7 +330,7 @@ if __name__ == "__main__":
         nuc.append(lKClassif[nuc[6]])
 
 
-    lSortedAllkNucleosomes = sorted(lAllkNucleosomes, key=lambda nuc: (nuc[1],nuc[2]))
+    lSortedAllkNucleosomes = sorted(lAllkNucleosomes, key=lambda nuc: (nuc[0],nuc[1]))
 #    export("k{}.clusters.txt".format(idx),lSortedlkNucleosomes)
     export("{}.nucleosomes.txt".format(args.prefix),lSortedAllkNucleosomes)
 #        lSortedlkNucleosomes = sorted(lkNucleosomes, key=lambda nuc: (nuc[1],nuc[2]))
