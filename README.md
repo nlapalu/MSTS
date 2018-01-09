@@ -110,7 +110,7 @@ Generate phasogram for each list
 
 ## MSTS overview
 
-<img src="doc/images/MSTS_overview.png" width="850"> <img src="doc/images/MSTS_overview.png" width="850">
+<img src="doc/images/MSTS_overview.png" width="850">
 
 ## References
 
