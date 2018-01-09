@@ -108,5 +108,9 @@ Generate phasogram for each list
 * [MSTS_dinuc_frequency.py](doc/MSTS_dinuc_frequency.md)
 * [MSTS_detect_nucleosomes.py](doc/MSTS_dinuc_frequency.md)
 
+## MSTS overview
+
+<img src="doc/images/MSTS_overview.png" width="850"> <img src="doc/images/MSTS_overview.png" width="850">
+
 ## References
 
