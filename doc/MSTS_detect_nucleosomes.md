@@ -72,7 +72,7 @@ SEQ1        7404    7551    34.6258503401   21.2968046801   53.0    0       fuzz
 
 After the K-Means clustering, we also generate a catoon with several plots. The main plot (on the right) displays the average profil for each detected clusters. On the left, there is a plot for each cluster with the average profil, the first and third quartile (gray) and the extrem values (specific color). We report also the number of nucleosomes affected to each cluster and the associated classification (very-well, well, fuzzy, bad).
 
-<img src="images/clusters.png" width="800">
+<img src="images/clusters.png"> 
 
 #### wig file (--wig)
 
