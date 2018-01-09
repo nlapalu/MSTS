@@ -40,7 +40,7 @@ import array
 
 class BamConverter(object):
 
-    def __init__(self, BamFile='', mode='single', prefix='out', bed=False, wig=False, cov=False, size=False, genome='', window=0, keepPosBedFile='', minFragSize=0, maxFragSize=2000, minDepCov=0, maxDepCov=1000000, logLevel='ERROR'):
+    def __init__(self, BamFile='', mode='single', prefix='out', bed=False, wig=False, cov=False, size=False, genome='', window=0, keepPosBigBedFile='', minFragSize=0, maxFragSize=2000, minDepCov=0, maxDepCov=1000000, logLevel='ERROR'):
         """constructor"""
 
         self.BamFile = BamFile
@@ -52,7 +52,7 @@ class BamConverter(object):
         self.size = size
         self.genome = genome
         self.window = window
-        self.keepPosBedFile = keepPosBedFile
+        self.keepPosBigBedFile = keepPosBigBedFile
         self.minFragSize = minFragSize
         self.maxFragSize = maxFragSize
         self.minDepCov = minDepCov
@@ -72,8 +72,8 @@ class BamConverter(object):
         if self.genome:
             self.lRefOrder = self.getReferenceOrder()
 
-        if self.keepPosBedFile:
-            self.bb = pyBigWig.open(self.keepPosBedFile)
+        if self.keepPosBigBedFile:
+            self.bb = pyBigWig.open(self.keepPosBigBedFile)
 
         if self.bed or self.wig or self.cov or self.size:
             self.checkIfOutputFileExist()
@@ -98,7 +98,7 @@ class BamConverter(object):
             for i in range(0,self.dReferences[seq]):
                 currentSeq.append(0)
 
-            if self.mode == "single":
+            if self.mode == "single" or self.mode == "single-expanded":
                 currentSeq, dFragmentSize, lBedTracks = self.convertWithSingleMode(seq, currentSeq)
             elif self.mode == "fragment" or self.mode == "fragment-middle":
                 currentSeq, dFragmentSize, lBedTracks = self.convertWithFragmentMode(seq, currentSeq)
@@ -141,8 +141,14 @@ class BamConverter(object):
             start = read.reference_start
             end = read.reference_start + read.query_alignment_length - 1
 
+            if self.mode == "single-expanded":
+                if read.is_reverse:
+                    start = end - 146 
+                else:
+                    end = start + 146
+
             if start and end:
-                if self.keepPosBedFile:
+                if self.keepPosBigBedFile:
                     if not self.isFragmentFullyIncludeInABedTrack(seq,start,end):
                         continue
 
@@ -190,7 +196,7 @@ class BamConverter(object):
                 end = read.reference_start + read.query_alignment_length -1
                     
             if start and end:
-                if self.keepPosBedFile:
+                if self.keepPosBigBedFile:
                     if not self.isFragmentFullyIncludeInABedTrack(seq,start,end):
                         continue
 
@@ -340,7 +346,7 @@ class BamConverter(object):
         try:
             with open(self.prefix + ".wig", 'a') as f:
                 f.write("variableStep chrom={}\n".format(seq))
-                if self.keepPosBedFile:
+                if self.keepPosBigBedFile:
                     for pos,cov in enumerate(lcov):
                         if self.isFragmentFullyIncludeInABedTrack(seq,pos,pos+1):
                             f.write("{}\t{}\n".format(pos+1,cov))
