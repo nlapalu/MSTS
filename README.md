@@ -113,7 +113,7 @@ Generate phasogram for each list
 * [MSTS_feature_phasogram.py](doc/MSTS_feature_phasogram.md)
 * [MSTS_count_TPM.py](doc/MSTS_count_TPM.md)
 * [MSTS_dinuc_frequency.py](doc/MSTS_dinuc_frequency.md)
-* [MSTS_detect_nucleosomes.py](doc/MSTS_dinuc_frequency.md)
+* [MSTS_detect_nucleosomes.py](doc/MSTS_detect_nucleosomes.md)
 
 ## MSTS overview
 
