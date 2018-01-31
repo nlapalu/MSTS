@@ -143,9 +143,9 @@ class BamConverter(object):
 
             if self.mode == "single-expanded":
                 if read.is_reverse:
-                    start = end - 146 
+                    start = max(0,end - 146) 
                 else:
-                    end = start + 146
+                    end = min(len(currentSeq)-1,start + 146)
 
             if start and end:
                 if self.keepPosBigBedFile:
