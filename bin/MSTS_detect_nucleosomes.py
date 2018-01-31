@@ -195,7 +195,7 @@ if __name__ == "__main__":
     if args.wig:
         printWigHeader()
 
-    buffSize = 10000000
+    buffSize = 20000000
     logging.info('Buffer size: {} bases'.format(buffSize))
 
     bw = pyBigWig.open(args.bigWig)
