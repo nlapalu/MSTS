@@ -139,7 +139,7 @@ class BamConverter(object):
         for read in self.bamFileH.fetch(reference=seq):
                 # process single and paired read in same manner
             start = read.reference_start
-            end = read.reference_start + read.query_alignment_length - 1
+            end = read.reference_end
 
             if self.mode == "single-expanded":
                 if read.is_reverse:
@@ -162,7 +162,7 @@ class BamConverter(object):
  
                 lBedTracks.append((seq,start,end))
 
-                for x in range(start,end+1):
+                for x in range(start,end):
                     currentSeq[x] += 1
             
         if self.minDepCov != 0 or self.maxDepCov != 1000000:
