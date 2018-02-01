@@ -107,7 +107,7 @@ class Graphics(object):
 
         fig = plt.Figure(figsize=(20,20))
         fig.suptitle(title, fontsize=32)
-        gs = gridspec.GridSpec(2, 1, width_ratios=[1,0],height_ratios=[1, 3], hspace=0.1) 
+        gs = gridspec.GridSpec(2, 1, width_ratios=[1],height_ratios=[1, 3], hspace=0.1) 
         ax1 = fig.add_subplot(gs[0])
         ax1.plot(lXs,lZOthers)
         lZmin = [0] * len(lZs)
@@ -212,7 +212,7 @@ class Graphics(object):
 
 
     @staticmethod
-    def plotHierarchicalClustering(lXs,distance,out="hierarchical_clustering.png", title="", xax="xax", yax="yax"):
+    def plotHierarchicalClustering(lXs,distance,labels=[],out="hierarchical_clustering.png", title="", xax="xax", yax="yax"):
         """Draw hierarchical clustering"""
 
         #fig = plt.Figure(figsize=(20,20))
@@ -224,7 +224,8 @@ class Graphics(object):
             leaf_rotation=90.,  # rotates the x axis labels
             leaf_font_size=8.,  # font size for the x axis labels
             color_threshold=distance,
-            distance_sort='ascending'
+            distance_sort='ascending',
+            labels=labels
             #distance_sort='descending'
         )
         axis_font = {'size':'28'}
