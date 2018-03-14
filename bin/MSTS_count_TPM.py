@@ -12,7 +12,7 @@ if __name__ == '__main__':
     program = sys.argv[0]
     version = __version__
     description = 'Count TPM for each transcript from a BAM file It requires \
-                   an annotation file in gff format, a sorted/indexe BAM file\
+                   an annotation file in gff format, a sorted/indexed BAM file\
                    The program computes the mean fragment length for each transcript\
                    and the mean for all. Then, it computes the effective\
                    length and the TPM'
@@ -23,6 +23,7 @@ if __name__ == '__main__':
     parser.add_argument("BamFile", help="BamFile", type=str)
     parser.add_argument("AnnotFile", help="Annotation file in gff3 format", type=str)
 
+    parser.add_argument("-t","--featType", help="Feature type choice for counts [exon,cds], default=exon", type=str, default="exon")
     parser.add_argument("-m","--minNbFrags", help="Minimum number of fragment per trancript to \
                         compute mean fragment length, [default=3]", type=int,
                         default=3) 
@@ -48,6 +49,10 @@ if __name__ == '__main__':
     logging.getLogger().setLevel(logLevel)
 
 
+    if args.featType.upper() not in ["EXON","CDS"]:
+        logging.error("available featType: exon or cds, please change your parameter")
+        sys.exit(1)
+
     i = TPMCounter(args.BamFile, args.AnnotFile, logLevel)
     #i.run(args.minNbFrags, args.stranded, countFile=args.countFile)
-    i.run(args.minNbFrags, args.stranded, countFile=None)
+    i.run(args.minNbFrags, args.stranded, countFile=None, featType=args.featType.upper())
