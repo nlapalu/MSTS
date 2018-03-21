@@ -31,4 +31,4 @@ seq2	bioinfobioger	CDS	139790	140054	.	+	0	ID=G4C1;Name=G4C1;Parent=T4;gene_id=G
 seq2	bioinfobioger	CDS	140150	140931	.	+	2	ID=G4C1;Name=G4C1;Parent=T4;gene_id=G4
 seq2	bioinfobioger	CDS	139543	139555	.	+	0	ID=G4C2;Name=G4C2;Parent=T4.2;gene_id=G4
 seq2	bioinfobioger	CDS	139642	139700	.	+	2	ID=G4C2;Name=G4C2;Parent=T4.2;gene_id=G4
-seq2	bioinfobioger	CDS	139642	143250	.	+	2	ID=G4C2;Name=G4C2;Parent=T4.2;gene_id=G4
+seq2	bioinfobioger	CDS	140900	143250	.	+	2	ID=G4C2;Name=G4C2;Parent=T4.2;gene_id=G4

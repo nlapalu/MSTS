@@ -57,7 +57,70 @@ class BamMetrics(object):
         return sum(lFragLenM)/len(lFragLenM)
 
 
-    def getMeanFragmentLengthFromSplicedMapping(self, chr='', start=None, end=None, chrIndex=None, annotIsReverse=None, stranded="no"):
+    def getMeanFragmentLengthFromSplicedMapping(self, chr='', lSpliceSites=[], chrIndex=None, annotIsReverse=None, stranded="no"):
+        """
+            return mean fragment length for spliced mapping
+
+        """
+
+        lFragLength = []
+        lFragLenM = []
+        lFragCoords = []
+        nbFragments = 0
+        fragStart = 0
+        fragEnd = 0
+
+        sReads = set()
+        if (chr and lSpliceSites):
+            for site in lSpliceSites:
+                #readIterator = self.bamFileH.fetch(reference=chr, start=site[0], end=site[1])
+                for read in self.bamFileH.fetch(reference=chr, start=site[0], end=site[1]):
+                    sReads.add(read)
+        #else:
+        #    readIterator = self.bamFileH.fetch()
+
+                #for read in readIterator:
+            for read in sReads:
+                # process paired reads
+                if read.is_paired:
+                    if read.is_read1:
+                        if (stranded == 'no') or (stranded == 'yes' and read.is_reverse == annotIsReverse) or (stranded == 'reverse' and read.is_reverse != annotIsReverse):
+                            if (read.template_length < 0):
+                                fragStart = read.next_reference_start
+                                fragEnd = read.next_reference_start-read.template_length -1
+                            else:
+                                fragStart = read.reference_start
+                                fragEnd = read.reference_start + read.template_length -1
+                        else:
+                            continue 
+                    else:
+                        continue
+                # process single
+                else:
+                    if (stranded == 'no') or (stranded == 'yes' and read.is_reverse == annotIsReverse) or (stranded == 'reverse' and read.is_reverse != annotIsReverse):
+                         #print "simple"
+                         fragStart = read.reference_start
+                         fragEnd = read.reference_start + read.query_alignment_length -1
+
+
+                lFragCoords.append((fragStart,fragEnd))
+
+
+                if len(lFragCoords) == 1000000:
+                    lFragLength =  self.getFragLengthWithSplicing(lFragCoords, chrIndex)
+                    lFragLenM.append(sum(lFragLength)/1000000)
+                    lFragLength = []
+                    nbFragments += 1000000
+
+        nbFragments += len(lFragCoords)
+        if nbFragments > 0: 
+            lFragLength =  self.getFragLengthWithSplicing(lFragCoords, chrIndex)
+            lFragLenM.append(sum(lFragLength)/len(lFragLength))
+            return sum(lFragLenM)/float(len(lFragLenM)), nbFragments
+        else:
+            return 0,0
+
+    def getMeanFragmentLengthFromSplicedMappingOld(self, chr='', start=None, end=None, chrIndex=None, annotIsReverse=None, stranded="no"):
         """
             return mean fragment length for spliced mapping
 

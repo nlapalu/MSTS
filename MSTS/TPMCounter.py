@@ -20,7 +20,7 @@ class TPMCounter(object):
     def __del__(self):
         pass
 
-    def getGenomeIndex(self, lGenes):
+    def getGenomeIndex(self, lGenes, featType="EXON"):
         """Index CDS positions for each sequence and return a dict"""
 
         dSeq = {}
@@ -33,46 +33,86 @@ class TPMCounter(object):
             bamFileH = pysam.AlignmentFile(self.bamFile, 'r', check_sq=True)
             for seq in bamFileH.header['SQ']:
                 dSeqLen[seq['SN']] = seq['LN']
+            bamFileH.close()
         except:
             raise
 
         for gene in sorted(lGenes):
+            if gene.seqid not in dSeqLen:
+                logging.info("sequence: {} not in mapping file, gene {} not indexed".format(gene.seqid, gene.id))
+                continue
             if gene.seqid != currentSeq:
                 if currentSeq != None:
-                    #lSeq = [1]*(lTuples[-1][1]+5000)
                     lSeq = [1]*dSeqLen[currentSeq]
                     for tup in lTuples:
                         for i in range(tup[0]-1,tup[1]):
                             lSeq[i] = 0
                     dSeq[currentSeq] = lSeq
-                    logging.info("Indexing CDS for seq: {}".format(currentSeq))
+                    logging.info("Indexing {} for seq: {}".format(featType,currentSeq))
                     lTuples = []
                     lSeq = []
                 currentSeq = gene.seqid
             for transcript in gene.lTranscripts:
-                for cds in transcript.lCDS:
-                    lTuples.append((cds.start, cds.end))
-        #lSeq = [1]*(lTuples[-1][1]+5000)
-        lSeq = [1]*dSeqLen[currentSeq]
-        for tup in lTuples:
-            for i in range(tup[0]-1,tup[1]):
-                lSeq[i] = 0
-        dSeq[currentSeq] = lSeq
-        logging.info("Indexing CDS for seq: {}".format(currentSeq))
+                if featType == "CDS":
+                    for cds in transcript.lCDS:
+                        lTuples.append((cds.start, cds.end))
+                elif featType == "EXON":
+                    for exon in transcript.lExons:
+                        lTuples.append((exon.start, exon.end))
+        if currentSeq in dSeqLen:
+            lSeq = [1]*dSeqLen[currentSeq]
+            for tup in lTuples:
+                for i in range(tup[0]-1,tup[1]):
+                    lSeq[i] = 0
+            dSeq[currentSeq] = lSeq
+            logging.info("Indexing {} for seq: {}".format(featType,currentSeq))
 
-        bamFileH.close()
         return dSeq
 
-                    
-    def run(self, minNbFrags, stranded, countFile=None):
+    def getTranscriptIndex(self, transcript, featType="EXON"):
+        """Index EXON or CDS positions for each sequence and return a dict"""
+
+        dSeq = {}
+        dSeqLen = {}
+        currentSeq = None
+        lSeq = []
+        lTuples = []
+        
+        try:
+            bamFileH = pysam.AlignmentFile(self.bamFile, 'r', check_sq=True)
+            for seq in bamFileH.header['SQ']:
+                dSeqLen[seq['SN']] = seq['LN']
+            bamFileH.close()
+        except:
+            raise
+
+        if featType == "CDS":
+            for cds in transcript.lCDS:
+                lTuples.append((cds.start, cds.end))
+        elif featType == "EXON":
+            for exon in transcript.lExons:
+                lTuples.append((exon.start, exon.end))
+
+        currentSeq = transcript.seqid
+        if currentSeq in dSeqLen:
+            lSeq = [1]*dSeqLen[currentSeq]
+            for tup in lTuples:
+                for i in range(tup[0]-1,tup[1]):
+                    lSeq[i] = 0
+            dSeq[currentSeq] = lSeq
+            logging.debug("Indexing {} for seq: {}".format(featType,currentSeq))
+
+        return dSeq
+
+                   
+    def run(self, minNbFrags, stranded, countFile=None, featType="EXON"):
         """run"""
         
-
-        # get transcript len
         GffParser = GffGeneParser(self.gffFile) 
-        genomeIndex = self.getGenomeIndex(GffParser.getAllGenes())
-        
-        # create genome Index
+#        genomeIndex = self.getGenomeIndex(GffParser.getAllGenes(), featType)
+#        if not genomeIndex:
+#            logging.error("No sequences to analyze - END")
+#            sys.exit(1)
        
         # get mean fragment len
         lMeans = []
@@ -81,8 +121,17 @@ class TPMCounter(object):
         iBamMetrics = BamMetrics(self.bamFile)
         for gene in GffParser.getAllGenes():
             for t in gene.lTranscripts:
-                #if t.id =="lm_SuperContig_0_v2_lmctg_0053_v2_egn4_orf_Lema_T005660.1":
-                mean, nbfrags = iBamMetrics.getMeanFragmentLengthFromSplicedMapping(chr=t.seqid, start=t.start,end=t.end, chrIndex=genomeIndex[t.seqid], annotIsReverse=t.isOnReverseStrand(), stranded=stranded)
+                genomeIndex = self.getTranscriptIndex(t, featType)
+                if not genomeIndex:
+                     logging.error("Reference sequence:{} of transcript:{} not in bam file".format(t.seqid,t.id))
+                     sys.exit(1)
+                lSpliceSites = []
+                if featType == "EXON":
+                    lSpliceSites = [(exon.start, exon.end) for exon in t.lExons]    
+                if featType == "CDS":
+                    lSpliceSites = [(cds.start, cds.end) for cds in t.lCDS]    
+                #mean, nbfrags = iBamMetrics.getMeanFragmentLengthFromSplicedMappingOld(chr=t.seqid, start=t.start,end=t.end, chrIndex=genomeIndex[t.seqid], annotIsReverse=t.isOnReverseStrand(), stranded=stranded)
+                mean, nbfrags = iBamMetrics.getMeanFragmentLengthFromSplicedMapping(chr=t.seqid, lSpliceSites=lSpliceSites, chrIndex=genomeIndex[t.seqid], annotIsReverse=t.isOnReverseStrand(), stranded=stranded)
                 dNbFragPerTranscripts[t.id] = nbfrags
                 logging.info("{}: nb frags: {}, mean frag length: {}".format(t.id, nbfrags, mean))
                 if nbfrags >= minNbFrags:

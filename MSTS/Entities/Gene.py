@@ -13,6 +13,14 @@ class Gene(object):
         self.strand = strand
         self.lTranscripts = lTranscripts
 
+    def isOnReverseStrand(self):
+        """return True if strand -"""
+
+        if self.strand == -1:
+            return True
+        else:
+            return False
+
     def __eq__(self, other):
         """Equality on all args"""
       

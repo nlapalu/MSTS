@@ -1,4 +1,4 @@
-#!/usrbin/env python
+#!/usr/bin/env python
 
 class CDS(object):
 
@@ -21,6 +21,6 @@ class CDS(object):
     def __repr__(self):
         """CDS representation"""
 
-        return 'CDS: {}'.format(self.cds_id)
+        return 'CDS: {}-{}-{}-{}-{}-{}'.format(self.cds_id,self.seqid,self.start,self.end,self.strand,self.transcript_id)
 
 

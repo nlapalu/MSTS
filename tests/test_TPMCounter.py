@@ -16,16 +16,35 @@ class TestTPMCounter(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_getGenomeIndex(self):
+    def no_test_getGenomeIndex(self):
         """Test getGenomeIndex"""
 
         lGenes = GffGeneParser(self.inputGff).getAllGenes()
+#        print lGenes
         dExpectedCDSSeq = {}
         dGetSeq = self.iTPMCounter.getGenomeIndex(lGenes,featType="CDS")
         self.assertEquals(dExpectedCDSSeq,dGetSeq)
         dExpectedExonSeq = {}
         dGetSeq = self.iTPMCounter.getGenomeIndex(lGenes,featType="EXON")
         self.assertEquals(dExpectedExonSeq,dGetSeq)
+
+    def test_getTranscriptIndex(self):
+        """Test getGenomeIndex"""
+
+        lGenes = GffGeneParser(self.inputGff).getAllGenes()
+        for gene in lGenes:
+            for transcript in gene.lTranscripts:
+                sumExpected = transcript.getLength() - transcript.getExonTotalLength() 
+                #print transcript.id, sumExpected
+                dGetSeq = self.iTPMCounter.getTranscriptIndex(transcript,featType="EXON")
+                sumGet = sum(dGetSeq[transcript.seqid][transcript.start-1:transcript.end])
+                self.assertEquals(sumExpected,sumGet)
+                sumExpected = transcript.getLength() - transcript.getCDSTotalLength() 
+                #print transcript.id, sumExpected
+                dGetSeq = self.iTPMCounter.getTranscriptIndex(transcript,featType="CDS")
+                sumGet = sum(dGetSeq[transcript.seqid][transcript.start-1:transcript.end])
+                self.assertEquals(sumExpected,sumGet)
+
 
 if __name__ == "__main__":
     suite = unittest.TestLoader().loadTestsFromTestCase(TestTPMCounter)

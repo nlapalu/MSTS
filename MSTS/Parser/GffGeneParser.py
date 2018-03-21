@@ -5,14 +5,17 @@ import re
 
 from MSTS.Entities.Gene import Gene
 from MSTS.Entities.Transcript import Transcript
+from MSTS.Entities.Exon import Exon
 from MSTS.Entities.CDS import CDS
 
 class GffGeneParser(object):
 
-    def __init__(self, inputGffFile=""):
+    def __init__(self, inputGffFile="", logLevel='ERROR'):
         """Constructor"""
 
         self.inputGffFile = inputGffFile
+        self.logLevel = logLevel
+        logging.basicConfig(level=self.logLevel) 
         self.lGenes = []
 
         self._parse()
@@ -53,6 +56,16 @@ class GffGeneParser(object):
                         else:
                             dGenes[gene_id].lTranscripts = [currentTranscript]
 
+                    if values[2] == 'exon':
+                        id = self._getFeatureTagValue('ID',values[8])
+                        lTranscript_ids = self._getFeatureTagValues('Parent', values[8])
+                        currentExon = Exon(id, values[0], int(values[3]), int(values[4]), self._getStrand(values[6]), lTranscript_ids)
+                        for transcript_id in lTranscript_ids:
+                            if len(dTranscripts[transcript_id].lExons) > 0:
+                                dTranscripts[transcript_id].lExons.append(currentExon)
+                            else:
+                                dTranscripts[transcript_id].lExons = [currentExon]
+
                     if values[2] == 'CDS':
                         id = self._getFeatureTagValue('ID',values[8])
                         transcript_id = self._getFeatureTagValue('Parent', values[8])
@@ -72,6 +85,14 @@ class GffGeneParser(object):
         else:
             raise Exception('Cannot find tag {} in string \'{}\''.format(tag, line))
 
+    def _getFeatureTagValues(self, tag, line):
+        """Return the list of values of the tag property"""
+        m = re.search(r".*{mytag}=([^;]*);{{0,1}}.*".format(mytag = tag),line)
+        if m:
+            return m.group(1).split(',')
+        else:
+            raise Exception('Cannot find tag {} in string \'{}\''.format(tag, line))
+
 
     def _getStrand(self, strand):
         """Return strand as integer(1,-1) instead of +,- """
@@ -82,9 +103,4 @@ class GffGeneParser(object):
             return -1
         else:
             raise Exception('Cannot defined strand for feature')
-
-
-#    def _getFeatureTagValues(self, tag, line):
-#        """Return the list of values of the tag property"""
-
 
