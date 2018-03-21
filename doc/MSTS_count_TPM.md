@@ -36,7 +36,7 @@ or
 
 ## Inputs:
 
-The Bam file must be preferrentially obtained from a splice-mapper (ex: STAR, HISAT, TopHat, ...)
+The Bam file must be preferentially obtained from a splice aware mapper (ex: STAR, HISAT, TopHat, ...)
 
 Below a valid gff3 format for this script:
 
