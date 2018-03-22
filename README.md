@@ -68,7 +68,7 @@ then:
 
 #### For paired reads
 
-`MSTS_converter.py mapping.sorted.bam -m fragment-middle -w 20 -p mapping -g assembly.genome --wig --size`
+`MSTS_converter.py mapping.sorted.bam -m fragment-middle -w 20 -p mapping -g assembly.genome --wig --size --bed`
 
 ### Convert wig file to bigWig file
 
@@ -105,6 +105,33 @@ Generate phasogram for each list
 `MSTS_feature_phasogram.py mapping.bw genes.gff3 -v 2 -o myfeaturestartphasogram1.png -t "phasogram on transcript, start as pivot, 5>TPM>1"  -ft mRNA -l 5-1.tpm --context --GaussianSmoothing`
 
 `MSTS_feature_phasogram.py mapping.bw genes.gff3 -v 2 -o myfeaturestartphasogram1.png -t "phasogram on transcript, start as pivot, TPM < 1"  -ft mRNA -l 1.tpm --context --GaussianSmoothing`
+
+### Detect and classify nucleosomes
+
+
+`MSTS_detect_nucleosomes.py`  
+
+
+### Analyze di-nucleotide composition
+
+The di-nucleotide pattern AT/GC with a frequence of 10 bp for nucleosome fixation site has been largely described (ref) and proposed to be used as data quality control (ref CAM). You can perform a such analysis on your mapping data converted in bigBed file with MSTS_converter.py
+
+from Bam file:
+
+```
+# convert your mapping bed file to bigBed
+bedToBigBed mapping.bed assembly.genome mapping.bb
+# run MSTS_dinuc_frequency.py
+MSTS_dinuc_frequency.py mapping.bb 
+```
+
+You can also control your nucleosome detection and classification with this tool. We expect a better signal for well positionned nucleosome compare to bad/loosely positionned. To do that run MSTS_detect_nucleosomes.py with --bed option and convert them to bigBed. We present below the dinucleotide frequency analyzed for 3 types of clusters:
+
+```
+python MSTS_dinuc_frequency.py genome.fasta detect.k1-bad.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc -ami -65 -amx 65
+```
+
+from Detected positions:
 
 ## MSTS tools
 
