@@ -119,17 +119,32 @@ The di-nucleotide pattern AT/GC with a frequence of 10 bp for nucleosome fixatio
 from Bam file:
 
 ```
-# convert your mapping bed file to bigBed
+# convert your mapping bed file to bigBed and run MSTS_dinuc_frequency
 bedToBigBed mapping.bed assembly.genome mapping.bb
-# run MSTS_dinuc_frequency.py
 MSTS_dinuc_frequency.py mapping.bb 
 ```
 
-You can also control your nucleosome detection and classification with this tool. We expect a better signal for well positionned nucleosome compare to bad/loosely positionned. To do that run MSTS_detect_nucleosomes.py with --bed option and convert them to bigBed. We present below the dinucleotide frequency analyzed for 3 types of clusters:
+<img src="images/" width="425"> <img src="images/" width="425">
 
-```
-python MSTS_dinuc_frequency.py genome.fasta detect.k1-bad.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc -ami -65 -amx 65
-```
+You can also control your nucleosome detection and classification with this tool. We expect a better signal for well positionned nucleosome compare to bad/loosely positionned. To do that run MSTS_detect_nucleosomes.py with --bed option and convert them to bigBed. We present below the dinucleotide frequency analyzed for 4 types of clusters (bad, fuzzy, well, very-well):
+
+`python MSTS_dinuc_frequency.py genome.fasta detect.k1-bad.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_bad -ami -65 -amx 65`
+
+<img src="images/detect_dinuc_bad_ATGC_Normalized.png" width="425"> <img src="images/detect_dinuc_bad_ATGC_Correlogram.png" width="425">
+
+`python MSTS_dinuc_frequency.py genome.fasta detect.k2-fuzzy.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_fuzzy -ami -65 -amx 65`
+
+<img src="images/detect_dinuc_fuzzy_ATGC_Normalized.png" width="425"> <img src="images/detect_dinuc_fuzzy_ATGC_Correlogram.png" width="425">
+
+`python MSTS_dinuc_frequency.py genome.fasta detect.k3-well.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_well -ami -65 -amx 65`
+
+<img src="images/detect_dinuc_well_ATGC_Normalized.png" width="425"> <img src="images/detect_dinuc_well_ATGC_Correlogram.png" width="425">
+
+`python MSTS_dinuc_frequency.py genome.fasta detect.k4-very-well.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_very-well -ami -65 -amx 65`
+
+<img src="images/detect_dinuc_very-well_ATGC_Normalized.png" width="425"> <img src="images/detect_dinuc_very-well_ATGC_Correlogram.png" width="425">
+
+
 
 from Detected positions:
 

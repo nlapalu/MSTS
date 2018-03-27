@@ -55,8 +55,8 @@ if __name__ == '__main__':
     parser.add_argument("--pFreqNormMix",help="print AT and GC Normalized frequencies on single plot", action="store_true", default=False)
     parser.add_argument("--pAutocor",help="print AT and GC correlograms", action="store_true", default=False)
     parser.add_argument("--pAutocorMix",help="print AT and GC autocorrelations on a single correlogram", action="store_true", default=False)
-    parser.add_argument("-ami","--autocorMin", help="start for autocorrelation analysis", type=int, default=5)
-    parser.add_argument("-amx","--autocorMax", help="stop for autocorrelation analysis", type=int, default=35)
+    parser.add_argument("-ami","--autocorMin", help="start for autocorrelation analysis, default=[5]", type=int, default=5)
+    parser.add_argument("-amx","--autocorMax", help="stop for autocorrelation analysis, default=[35]", type=int, default=35)
     parser.add_argument("-b","--buffer", help="size of chunk (nb sequences) to keep in memory before analysis", type=int, default=1000000)
     parser.add_argument("-v", "--verbosity", type=int, choices=[1,2,3],
                         help="increase output verbosity 1=error, 2=info, 3=debug")
