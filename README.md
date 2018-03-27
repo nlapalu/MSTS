@@ -114,9 +114,9 @@ Generate phasogram for each list
 
 ### Analyze di-nucleotide composition
 
-The di-nucleotide pattern AT/GC with a frequence of 10 bp for nucleosome fixation site has been largely described (ref) and proposed to be used as data quality control (ref CAM). You can perform a such analysis on your mapping data converted in bigBed file with MSTS_converter.py
+The di-nucleotide pattern AT/GC with a frequence of 10 bp for nucleosome fixation site has been largely described (ref) and proposed to be used as data quality control (*S.Hu et al. 2017*). You can perform a such analysis on your mapping data converted in bigBed file with MSTS_converter.py
 
-from Bam file:
+**1) from you mapping file witg MSTS_converter:**
 
 ```
 # convert your mapping bed file to bigBed and run MSTS_dinuc_frequency
@@ -126,7 +126,7 @@ MSTS_dinuc_frequency.py mapping.bb
 
 <img src="doc/images/detect_dinuc_mapping_40_ATGC_Normalized.png" width="425"> <img src="doc/images/detect_dinuc_mapping_40_ATGC_Correlogram.png" width="425">
 
-from Detected positions:
+**2) from detected nucleosome positions:**
 
 You can also control your nucleosome detection and classification with this tool. We expect a better signal for well positionned nucleosome compare to bad/loosely positionned. To do that run MSTS_detect_nucleosomes.py with --bed option and convert them to bigBed. We present below the dinucleotide frequency analyzed for 4 types of clusters (bad, fuzzy, well, very-well):
 
@@ -163,4 +163,6 @@ You can also control your nucleosome detection and classification with this tool
 <img src="doc/images/MSTS_overview.png" width="850">
 
 ## References
+
+* S. Hu, X. Chen, J. Liao, Y. Chen, C. Zhao, and Y. Zhang, “CAM: A quality control pipeline for MNase-seq data,” PLoS One, vol. 12, no. 8, p. e0182771, Aug. 2017.
 
