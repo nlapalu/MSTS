@@ -124,7 +124,7 @@ bedToBigBed mapping.bed assembly.genome mapping.bb
 MSTS_dinuc_frequency.py mapping.bb 
 ```
 
-<img src="images/" width="425"> <img src="images/" width="425">
+<img src="doc/images/detect_dinuc_mapping_40_ATGC_Normalized.png" width="425"> <img src="doc/images/detect_dinuc_mapping_40_ATGC_Correlogram.png" width="425">
 
 from Detected positions:
 
