@@ -103,6 +103,7 @@ then:
 
 ...
 
+
 ## Analyze relation between Transcript Expression level and nucleosome occupancy
 
 If you have RNA-Seq data and MAINE-Seq data, you could draw phasograms with intervals of expression levels
