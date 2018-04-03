@@ -18,12 +18,14 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BI
 	* [Introduction](#introduction)
 	* [Mapping sequencing reads](#mapping-sequencing-reads)
 	* [Draw phasogram and get nucleosome spacing](#draw-phasogram-and-get-nucleosome-spacing)
-	* [Draw phasogram and analyze feature specificity](#draw-phasogram-and-analyze-feature-specificity)
+		* [Analysis at the genome scale](#analysis-at-the-genome-scale)
+		* [Analysis of feature specificity](#analysis-of-feature-specificity)
 	* [Analyze relation between Transcript Expression level and nucleosome occupancy](#analyze-relation-between-transcript-expression-level-and-nucleosome-occupancy)
 	* [Detect and classify nucleosomes](#detect-and-classify-nucleosomes)
 	* [Analyze di-nucleotide composition](#analyze-di-nucleotide-composition)
 		* [From mapped reads](#from-mapped-reads) 
 		* [From detected nucleosome positions](from-detected-nucleosome-positions)
+	* [Differential signal analysis](#differential-signal-analysis)
 * [References](#references)
 
 
@@ -101,12 +103,25 @@ then:
 
 ## Draw phasogram and get nucleosome spacing 
 
-`MSTS_phasogram.py mapping.bw -w 1200 -o mapping.phasogram.png -t "phasogram - mapping" -v 2 --flush --regression > mapping.phaso`
+### Analysis at the genome scale
 
-## Draw phasogram and analyze feature specificity
+One of the first common thing to do after the mapping is the phasogram of your data. This graph highlights the nucleosome arrangement on the genome and the average spacing between two nucleosome. 
 
-...
+`MSTS_phasogram.py mapping.bw -w 1000 -o mapping.phasogram.png -t "phasogram - mapping" -v 2 --flush --regression > mapping.phaso`
 
+<img src="doc/images/phasogram.genome.png">
+
+We recommend not to exceed 1kb as analyzed window. Beyond this value, the signal becomes less reliable.
+
+
+
+### Analysis of feature specificity
+
+In case of genome specificity (high AT content, AT isochore, different chromosome composition, ...), you can limit the phasogram to specific regions. Below we limited the analysis to genes. We can observe that the standard deviation is reduced, the spacing between nucleosome is less variable compare to the entire genome.
+
+`MSTS_phasogram.py /work/spe_nucleosome/Lepto/MAINE-Seq/publi/converter/Lmb/mapping_40.bw -w 1000 -o mapping.phasogram.png -t "phasogram - mapping" -v 2 --flush --regression -b genes.bb > mapping.phaso`
+
+<img src="doc/images/phasogram.genes.png">
 
 ## Analyze relation between Transcript Expression level and nucleosome occupancy
 
@@ -184,6 +199,10 @@ You can also control your nucleosome detection and classification with this tool
 
 <img src="doc/images/detect_dinuc_very-well_ATGC_Normalized.png" width="425"> <img src="doc/images/detect_dinuc_very-well_ATGC_Correlogram.png" width="425">
 
+
+## Differential signal analysis
+
+We propose a simple  
 
 
 
