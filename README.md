@@ -20,6 +20,10 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BI
 	* [Draw phasogram and get nucleosome spacing](#draw-phasogram-and-get-nucleosome-spacing)
 	* [Draw phasogram and analyze feature specificity](#draw-phasogram-and-analyze-feature-specificity)
 	* [Analyze relation between Transcript Expression level and nucleosome occupancy](#analyze-relation-between-transcript-expression-level-and-nucleosome-occupancy)
+	* [Detect and classify nucleosomes](#detect-and-classify-nucleosomes)
+	* [Analyze di-nucleotide composition](#analyze-di-nucleotide-composition)
+		* [From mapped reads](#from-mapped-reads) 
+		* [From detected nucleosome positions](from-detected-nucleosome-positions)
 * [References](#references)
 
 
@@ -132,17 +136,17 @@ Generate phasogram for each list
 
 `MSTS_feature_phasogram.py mapping.bw genes.gff3 -v 2 -o myfeaturestartphasogram1.png -t "phasogram on transcript, start as pivot, TPM < 1"  -ft mRNA -l 1.tpm --context --GaussianSmoothing`
 
-### Detect and classify nucleosomes
+## Detect and classify nucleosomes
 
 
 `MSTS_detect_nucleosomes.py`  
 
 
-### Analyze di-nucleotide composition
+## Analyze di-nucleotide composition
 
 The di-nucleotide pattern AT/GC with a frequence of 10 bp for nucleosome fixation site has been largely described (ref) and proposed to be used as data quality control (*S.Hu et al. 2017*). You can perform a such analysis on your mapping data converted in bigBed file with MSTS_converter.py
 
-**1) from you mapping file witg MSTS_converter:**
+### From mapped reads 
 
 ```
 # convert your mapping bed file to bigBed and run MSTS_dinuc_frequency
@@ -152,29 +156,29 @@ MSTS_dinuc_frequency.py mapping.bb
 
 <img src="doc/images/detect_dinuc_mapping_40_ATGC_Normalized.png" width="425"> <img src="doc/images/detect_dinuc_mapping_40_ATGC_Correlogram.png" width="425">
 
-**2) from detected nucleosome positions:**
+### From detected nucleosome positions
 
 You can also control your nucleosome detection and classification with this tool. We expect a better signal for well positioned nucleosome compare to bad/loosely positioned. To do that run MSTS_detect_nucleosomes.py with --bed option and convert them to bigBed. We present below the dinucleotide frequency analyzed for 4 types of clusters (bad, fuzzy, well, very-well):
 
-*2-a) bad positioned nucleosomes:*
+#### bad positioned nucleosomes:
 
 `python MSTS_dinuc_frequency.py genome.fasta detect.k1-bad.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_bad -ami -65 -amx 65`
 
 <img src="doc/images/detect_dinuc_bad_ATGC_Normalized.png" width="425"> <img src="doc/images/detect_dinuc_bad_ATGC_Correlogram.png" width="425">
 
-*2-b) fuzzy positioned nucleosomes:*
+#### fuzzy positioned nucleosomes:*
 
 `python MSTS_dinuc_frequency.py genome.fasta detect.k2-fuzzy.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_fuzzy -ami -65 -amx 65`
 
 <img src="doc/images/detect_dinuc_fuzzy_ATGC_Normalized.png" width="425"> <img src="doc/images/detect_dinuc_fuzzy_ATGC_Correlogram.png" width="425">
 
-*2-c) well positioned nucleosomes:*
+#### well positioned nucleosomes:*
 
 `python MSTS_dinuc_frequency.py genome.fasta detect.k3-well.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_well -ami -65 -amx 65`
 
 <img src="doc/images/detect_dinuc_well_ATGC_Normalized.png" width="425"> <img src="doc/images/detect_dinuc_well_ATGC_Correlogram.png" width="425">
 
-*2-d) very-well positioned nucleosomes:*
+#### very-well positioned nucleosomes:*
 
 `python MSTS_dinuc_frequency.py genome.fasta detect.k4-very-well.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_very-well -ami -65 -amx 65`
 
