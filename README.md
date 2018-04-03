@@ -20,6 +20,7 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BI
 	* [Draw phasogram and get nucleosome spacing](#draw-phasogram-and-get-nucleosome-spacing)
 		* [Analysis at the genome scale](#analysis-at-the-genome-scale)
 		* [Analysis of feature specificity](#analysis-of-feature-specificity)
+	* [Draw feature specific phasogram](#draw-feature-specific-phasogram)
 	* [Analyze relation between Transcript Expression level and nucleosome occupancy](#analyze-relation-between-transcript-expression-level-and-nucleosome-occupancy)
 	* [Detect and classify nucleosomes](#detect-and-classify-nucleosomes)
 	* [Analyze di-nucleotide composition](#analyze-di-nucleotide-composition)
@@ -122,6 +123,11 @@ In case of genome specificity (high AT content, AT isochore, different chromosom
 `MSTS_phasogram.py /work/spe_nucleosome/Lepto/MAINE-Seq/publi/converter/Lmb/mapping_40.bw -w 1000 -o mapping.phasogram.png -t "phasogram - mapping" -v 2 --flush --regression -b genes.bb > mapping.phaso`
 
 <div align="center"><img src="doc/images/phasogram.genes.png" width=650></div>
+
+## Draw feature specific phasogram
+
+We also propose a "phasogram like" graph, that show the cumulative signal on specific features. Several options are available to limit the graph to desired bases , ex "context" (no spanning feature or base outside of the feature).  
+
 
 ## Analyze relation between Transcript Expression level and nucleosome occupancy
 
