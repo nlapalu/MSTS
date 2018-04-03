@@ -109,7 +109,7 @@ One of the first common thing to do after the mapping is the phasogram of your d
 
 `MSTS_phasogram.py mapping.bw -w 1000 -o mapping.phasogram.png -t "phasogram - mapping" -v 2 --flush --regression > mapping.phaso`
 
-<img src="doc/images/phasogram.genome.png">
+<img src="doc/images/phasogram.genome.png" width=650>
 
 We recommend not to exceed 1kb as analyzed window. Beyond this value, the signal becomes less reliable.
 
