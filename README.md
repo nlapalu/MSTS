@@ -1,8 +1,29 @@
+
+
+
+
+
 # MSTS: MAINE-Seq Tool Suite
 
 MSTS has been developed to analyse NGS data in the frame of MAINE-Seq experiments and to propose some utilities to draw graph and perform simple statistics on your data.
 
 MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BIOGER](http://www.versailles-grignon.inra.fr/bioger). Please do not hesitate to contact us (nlapalu at inra dot fr) if you have any comments or questions.
+
+# Table of contents
+
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Tool documentations](#tool-documentations)
+* [Protocole to analyze MAINE-Seq data](#protocole-to-analyze-maine-seq-data)
+	* [Introduction](#introduction)
+	* [Mapping sequencing reads](#mapping-sequencing-reads)
+	* [Draw phasogram and get nucleosome spacing](#draw-phasogram-and-get-nucleosome-spacing)
+	* [Draw phasogram and analyze feature specificity](#draw-phasogram-and-analyze-feature-specificity)
+	* [Analyze relation between Transcript Expression level and nucleosome occupancy](#analyze-relation-between-transcript-expression-level-and-nucleosome-occupancy)
+* [References](#references)
+
+
+
 
 ## Dependencies and external tools
 
@@ -44,15 +65,15 @@ export PYTHONPATH=/home/nlapalu/test/MSTS/lib/python2.7/site-packages/
 export PATH=$PATH:/home/nlapalu/test/MSTS/bin
 ```
 
-## Protocole to analyze MAINE-Seq data
+# Protocole to analyze MAINE-Seq data
 
-### Introduction
+## Introduction
 
 some comments on mapping step ...
 
 some comments on quality criteria and metrics / graph to control quality
 
-#### Convert your mapping file
+## Mapping sequencing reads
 
 Be sure your mapping file is sorted and indexing, if not:
 
@@ -62,7 +83,7 @@ Be sure your mapping file is sorted and indexing, if not:
 
 then:
 
-#### For single reads
+### For single reads
 
 `MSTS_converter.py mapping.sorted.bam -m single-expanded -p mapping -g assembly.genome --wig --size`
 
@@ -74,11 +95,15 @@ then:
 
 `wigToBigWig mapping.wig assembly.genome mapping.bw`
 
-### Draw a phasogram 
+## Draw phasogram and get nucleosome spacing 
 
 `MSTS_phasogram.py mapping.bw -w 1200 -o mapping.phasogram.png -t "phasogram - mapping" -v 2 --flush --regression > mapping.phaso`
 
-### Analyze relation between Transcript Expression level and nucleosome occupancy
+## Draw phasogram and analyze feature specificity
+
+...
+
+## Analyze relation between Transcript Expression level and nucleosome occupancy
 
 If you have RNA-Seq data and MAINE-Seq data, you could draw phasograms with intervals of expression levels
 
@@ -157,7 +182,7 @@ You can also control your nucleosome detection and classification with this tool
 
 
 
-## MSTS tools
+# Tool documentations
 
 * [MSTS_converter.py](doc/MSTS_converter.md)
 * [MSTS_phasogram.py](doc/MSTS_phasogram.md)
@@ -170,7 +195,7 @@ You can also control your nucleosome detection and classification with this tool
 
 <img src="doc/images/MSTS_overview.png" width="850">
 
-## References
+# References
 
 * S. Hu, X. Chen, J. Liao, Y. Chen, C. Zhao, and Y. Zhang, “CAM: A quality control pipeline for MNase-seq data,” PLoS One, vol. 12, no. 8, p. e0182771, Aug. 2017.
 
