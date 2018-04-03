@@ -121,7 +121,7 @@ In case of genome specificity (high AT content, AT isochore, different chromosom
 
 `MSTS_phasogram.py /work/spe_nucleosome/Lepto/MAINE-Seq/publi/converter/Lmb/mapping_40.bw -w 1000 -o mapping.phasogram.png -t "phasogram - mapping" -v 2 --flush --regression -b genes.bb > mapping.phaso`
 
-<div align="center"><img src="doc/images/phasogram.genes.png"></div>
+<div align="center"><img src="doc/images/phasogram.genes.png" width=650></div>
 
 ## Analyze relation between Transcript Expression level and nucleosome occupancy
 
