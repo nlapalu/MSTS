@@ -43,7 +43,6 @@ fig = plt.Figure(figsize=(20,20))
 fig.suptitle("merged phasogram", fontsize=32)
 ax = fig.add_subplot(111)
 for i,val in enumerate(llYs):
-    print val
     ax.plot(lXs,val,color=color[i])
 axis_font = {'size':'28'}
 ax.set_xlabel("window, bp", **axis_font)
