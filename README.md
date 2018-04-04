@@ -106,15 +106,13 @@ then:
 
 ### Analysis at the genome scale
 
-One of the first common thing to do after the mapping is the phasogram of your data. This graph highlights the nucleosome arrangement on the genome and the average spacing between two nucleosome. 
+One of the first common thing to do after the mapping is the phasogram of your data. This graph highlights the nucleosome arrangement on the genome and the average spacing between two nucleosomes. 
 
 `MSTS_phasogram.py mapping.bw -w 1000 -o mapping.phasogram.png -t "phasogram - mapping" -v 2 --flush --regression > mapping.phaso`
 
 <div align="center"><img src="doc/images/phasogram.genome.png" width=650></div>
 
-We recommend not to exceed 1kb as analyzed window. Beyond this value, the signal becomes less reliable.
-
-
+As we can see, the distance between two nucleosome summits is estimated close to 164bp with a standard deviation of 2,3bp. So, with a size of 147bp for a nucleosome fixation, we can propose an average spacing of 18 nucleotides between nucleosomes. We recommend not to exceed 1kb as analyzed window. Beyond this value, the signal becomes less reliable.
 
 ### Analysis of feature specificity
 
@@ -124,10 +122,21 @@ In case of genome specificity (high AT content, AT isochore, different chromosom
 
 <div align="center"><img src="doc/images/phasogram.genes.png" width=650></div>
 
-## Draw feature specific phasogram
+## Draw feature specific phasograms
 
-We also propose a "phasogram like" graph, that show the cumulative signal on specific features. Several options are available to limit the graph to desired bases , ex "context" (no spanning feature or base outside of the feature).  
+We also propose a "phasogram like" graph, that show the cumulative signal on specific features. The "context" option limits the graph to the desired bases, no spanning feature or base outside of the feature. For example, if you wish to analyze 1kb before and after the Transcription Start Sites (TSS), but some adjacent TSS are closer than 1kb, we remove bases spanning the new TSS to avoid bias. The number of bases taken into account to draw the signal are plotted as an histogram on the graph. We provide another histogram in the upper area with adjacent features of the same type. This option is usefull for small genomes with short intergenic regions. 
 
+__*Analysis of TSS:*__
+
+`MSTS_feature_phasogram.py mapping.bw genes.gff3 -v 2 -o featurephasogram.TSS.png -t "TSS, with context, with smoothing" -p start -ft mRNA --context --GaussianSmoothing`
+
+__*Analysis of TTS:*__
+
+`MSTS_feature_phasogram.py mapping.bw genes.gff3 -v 2 -o featurephasogram.TTS.png -t "TTS, with context, with smoothing" -p end -ft mRNA --context --GaussianSmoothing`
+
+<img src="doc/images/featurephasogram.TSS.png" width=425><img src="doc/images/featurephasogram.TTS.png" width=425>
+
+You can perform the same analysis on all the feature types available in your gff file.
 
 ## Analyze relation between Transcript Expression level and nucleosome occupancy
 
