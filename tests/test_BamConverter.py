@@ -14,6 +14,7 @@ class TestBamConverter(unittest.TestCase):
 
         #self.maxDiff = None
         self.BamFile =  "../test-data/input_min.bam"
+        self.BamFile2 =  "../test-data/input_micro.bam"
 
     def tearDown(self):
         pass 
@@ -47,7 +48,7 @@ class TestBamConverter(unittest.TestCase):
     def test_convertWithFragmentModeMiddle(self):
         """Test convertWithFragmentModeMiddle"""
 
-        expCurrentSeq = array.array('i',[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 3, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 1, 1, 0, 0, 3, 0, 2, 2, 1, 0, 1, 0, 1, 0, 1, 3, 1, 0, 1, 0, 1, 1, 0, 1, 2, 0, 0, 4, 2])
+        expCurrentSeq = array.array('i',[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 2, 0, 1, 0, 0, 0, 1, 0, 1, 2, 0, 0, 2, 0, 3, 0, 1, 0, 4, 0, 0, 3, 3, 0, 0, 1, 3, 1, 2, 0, 3, 0, 3, 4, 1, 0, 1, 1, 1, 1, 4, 3, 1, 1, 1, 0, 3, 1, 0, 2, 3, 0, 3, 5])
         seq = 'lm_SuperContig_13_v2'
         currentSeq = array.array('i')
         for i in range(0,1634580):
@@ -55,6 +56,19 @@ class TestBamConverter(unittest.TestCase):
         bc = BamConverter(self.BamFile, mode="fragment-middle")
         testCurrentSeq, dFragmentSize, lBedTracks  = bc.convertWithFragmentMode(seq, currentSeq)
         self.assertEquals(expCurrentSeq,testCurrentSeq[0:200])
+
+    def test_convertWithFragmentModeMiddleWindow(self):
+        """Test convertWithFragmentModeMiddle with window"""
+
+        expCurrentSeq = array.array('i',[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 2, 2, 2, 1, 2, 1, 2, 1, 1, 2, 2, 3, 1, 1, 0, 1, 1, 2, 3, 3, 2, 2, 2, 5, 3, 4, 1, 5, 4, 4, 3, 6, 6, 3, 1, 4, 5, 6, 3, 5, 3, 6, 7, 8, 5, 2, 2, 3, 3, 6, 8, 8, 5, 3, 2, 4, 4, 4, 3, 5, 5, 6, 8, 10])
+        seq = 'lm_SuperContig_13_v2'
+        currentSeq = array.array('i')
+        for i in range(0,1634580):
+            currentSeq.append(0)
+        bc = BamConverter(self.BamFile, mode="fragment-middle", window=1)
+        testCurrentSeq, dFragmentSize, lBedTracks  = bc.convertWithFragmentMode(seq, currentSeq)
+        self.assertEquals(expCurrentSeq,testCurrentSeq[0:200])
+
 
 
 if __name__ == "__main__":

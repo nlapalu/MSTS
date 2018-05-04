@@ -32,6 +32,7 @@ Note: the middle of a read/fragment is one base for odd read length
 import sys
 import os
 #import time
+import math
 import logging
 import pysam
 import pyBigWig
@@ -81,6 +82,9 @@ class BamConverter(object):
         if self.wig:
             self.printWigHeader()
 
+        self.nbTotalFrags = 0
+        self.nbAnalyzedFrags = 0
+
 
     def __del__(self):
 
@@ -113,9 +117,10 @@ class BamConverter(object):
             for size in dAllFragmentSize:
                 if size in dFragmentSize:
                     dAllFragmentSize[size] = dAllFragmentSize[size] + dFragmentSize[size]
+
         if self.size:
             self.printFragmentSize(dAllFragmentSize)
-
+        logging.info("Total Nb Fragments: {} -- Exported Nb Fragments: {}".format(self.nbTotalFrags, self.nbAnalyzedFrags))
 
     def isFragmentFullyIncludeInABedTrack(self, seq, start, end):
         "..."
@@ -135,17 +140,27 @@ class BamConverter(object):
         
         lBedTracks = []
         dFragmentSize = {}
+        nbTotalFrags = 0
+        nbAnalyzedFrags = 0
 
         for read in self.bamFileH.fetch(reference=seq):
-                # process single and paired read in same manner
-            start = read.reference_start
-            end = read.reference_end
+            # process single and paired read in same manner
+            nbTotalFrags+=1 
 
+            start = read.get_reference_positions()[0]
+            end = read.get_reference_positions()[-1]
+            
             if self.mode == "single-expanded":
                 if read.is_reverse:
                     start = max(0,end - 146) 
                 else:
                     end = min(len(currentSeq)-1,start + 146)
+            # to prevent bug with mapping close to start/end 
+            else:
+                start = max(0,start) 
+                end = min(len(currentSeq)-1,end)
+ 
+                
 
             if start and end:
                 if self.keepPosBigBedFile:
@@ -160,13 +175,24 @@ class BamConverter(object):
                 else:
                     dFragmentSize[end-start+1] = 1
  
+                nbAnalyzedFrags+=1
+
                 lBedTracks.append((seq,start,end))
 
-                for x in range(start,end):
+                for x in range(start,end+1):
+                    #print end+1
+                    #print len(currentSeq)
+                    #print read.reference_start
+                    #print read.reference_end
+                    #print read.query_name
                     currentSeq[x] += 1
             
         if self.minDepCov != 0 or self.maxDepCov != 1000000:
             currentSeq, lBedTracks, dFragmentSize = self.reduceDataToSpecificDepCov(currentSeq, lBedTracks, dFragmentSize)
+
+        logging.info("{}: Total Nb Fragments: {} -- Exported Nb Fragments: {}".format(seq, nbTotalFrags, nbAnalyzedFrags))
+        self.nbTotalFrags += nbTotalFrags
+        self.nbAnalyzedFrags += nbAnalyzedFrags
 
         return currentSeq, dFragmentSize, lBedTracks 
 
@@ -176,6 +202,8 @@ class BamConverter(object):
 
         lBedTracks = []
         dFragmentSize = {}
+        nbTotalFrags = 0
+        nbAnalyzedFrags = 0
 
         for read in self.bamFileH.fetch(reference=seq):
  
@@ -184,16 +212,18 @@ class BamConverter(object):
             # process paired reads
             if read.is_paired:
                 if read.is_read1:
+                    nbTotalFrags+=1 
                     if (read.template_length < 0):
                         start = read.next_reference_start
-                        end = read.next_reference_start-read.template_length -1
+                        end = read.next_reference_start-read.template_length-1
                     else:
                         start = read.reference_start
-                        end = read.reference_start + read.template_length -1 
+                        end = read.reference_start + read.template_length-1 
+         #           nbr += 1
             # process single
             else:
-                start = read.reference_start
-                end = read.reference_start + read.query_alignment_length -1
+                start = read.get_reference_positions()[0]
+                end = read.get_reference_positions()[-1]
                     
             if start and end:
                 if self.keepPosBigBedFile:
@@ -207,13 +237,25 @@ class BamConverter(object):
                     dFragmentSize[end-start+1] += 1
                 else:
                     dFragmentSize[end-start+1] = 1
- 
+                ##debug
+         #       print "{}\t{}\t{}".format(read.query_name,start,end)
+
+
+                ##debug 
+                nbAnalyzedFrags+=1 
                 if self.mode == "fragment":
                     lBedTracks.append((seq,start,end))
                     for x in range(start,end+1):
                         currentSeq[x] += 1
                 elif self.mode =="fragment-middle":
-                    middle = end-((end-start)/2)
+                    #middle = end-((end-start+1)/2)
+                    middle = int(start+math.ceil((end-start+1)/2.0))
+                    ##debug
+         #           if middle == 198:
+         #               print "198: {}".format(read.query_name)
+         #           if middle == 199:
+         #               print "199: {}".format(read.query_name)
+                    ##debug
                     window = self.window
 
                     if (end-start+1) < self.window:
@@ -221,18 +263,32 @@ class BamConverter(object):
                             window = (end-start+1)/2-1
                         else:
                             window = (end-start+1)/2
-
-                    if (end-start+1)%2:
-                        for x in range(middle-window, middle+1+window):
-                            currentSeq[x] += 1 
-                        lBedTracks.append((seq,middle - window ,(middle+1) + window))
-                    else:
-                        for x in range(middle-window,middle+window):
-                            currentSeq[x] += 1
-                        lBedTracks.append((seq,middle - window,middle + window))
+                    
+                 #   if (end-start+1)%2:
+                        
+                 #       for x in range(middle-window, middle+1+window):
+                 #           currentSeq[x] += 1 
+                 #           nbmiddle += 1
+                 #       lBedTracks.append((seq,middle - window ,(middle+1) + window))
+                #    else:
+                 #       for x in range(middle-window,middle+window):
+                 #           currentSeq[x] += 1
+                 #           nbmiddle +=1
+                 #       lBedTracks.append((seq,middle - window,middle + window))
+                    
+        #            nbmiddle = 0
+                    for x in range(middle-window, middle+1+window):
+                        currentSeq[x] += 1 
+        #                nbmiddle += 1
+        #            print nbmiddle
+                    lBedTracks.append((seq,middle - window , middle+1+ window))
 
         if self.minDepCov != 0 or self.maxDepCov != 1000000:
             currentSeq, lBedTracks, dFragmentSize = self.reduceDataToSpecificDepCov(currentSeq, lBedTracks, dFragmentSize)
+
+        logging.info("{}: Total Nb Fragments: {} -- Exported Nb Fragments: {}".format(seq, nbTotalFrags, nbAnalyzedFrags))
+        self.nbTotalFrags += nbTotalFrags
+        self.nbAnalyzedFrags += nbAnalyzedFrags
 
         return currentSeq, dFragmentSize, lBedTracks 
 
