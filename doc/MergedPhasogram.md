@@ -54,7 +54,7 @@ with open(sys.argv[1]) as f:
             llXs = lXs
 
 
-fig = plt.Figure(figsize=(20,20))
+fig = plt.Figure(figsize=(10,10))
 fig.suptitle("merged phasogram", fontsize=32)
 ax = fig.add_subplot(111)
 for i,val in enumerate(llYs):
@@ -65,5 +65,5 @@ ax.set_ylabel("signal coverage", **axis_font)
 ax.tick_params(labelsize=20)
 ax.legend(legend, fontsize=20)
 canvas = FigureCanvasAgg(fig)
-canvas.print_figure("phaso.merge.png", dpi=80)
+canvas.print_figure("phaso.merge.png", dpi=200)
 ```
