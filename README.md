@@ -233,7 +233,7 @@ We also export the clustering as a cartoon to easily visualize the average profi
 
 If you find few very-well, well positioned and a remarkably number of fuzzy, you can try the --refine option, that will relaunch a clustering on fuzzy positioned with a relaxed classification. See below the upper analysis with a refined clustering.
 
-<img src="doc/images/cluster-2-refine.png"> 
+<img src="doc/images/clusters-2-refine.png"> 
 
 ## Analyze di-nucleotide composition
 
