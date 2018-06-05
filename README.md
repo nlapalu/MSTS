@@ -194,10 +194,46 @@ In your case, we decided to keep the conventional protocole to define an average
 
 You get the list of detected nucleosomes in __detection_nucleosomes.txt__ 
 
-For further analysis or visualization, the --bed option export positioned nucleosomes per cluster and the --wig option, the smoothed signal use to classify occupancy values.
+```
+seq     start   end     mean    stdev   peak    cluster positioning
+SEQ01  13      159     8.0     4.25544868814   12.0    2       well
+SEQ01  1982    2128    8.02040816327   2.78105688263   10.0    4       fuzzy
+SEQ01  2355    2501    8.99319727891   1.9743132747    11.0    6       fuzzy
+SEQ01  3249    3395    15.6666666667   4.47568386191   22.0    3       fuzzy
+SEQ01  3387    3533    19.3605442177   6.35347200407   31.0    4       fuzzy
+SEQ01  3504    3650    16.9183673469   4.30710566845   20.0    6       fuzzy
+SEQ01  3670    3816    28.0476190476   11.419242224    41.0    4       fuzzy
+SEQ01  3840    3986    12.3333333333   4.32101860839   17.0    4       fuzzy
+SEQ01  4015    4161    10.0272108844   3.94165885558   17.0    4       fuzzy
+SEQ01  4230    4376    20.7278911565   4.53190927482   27.0    6       fuzzy
+SEQ01  4457    4603    29.4897959184   10.7477998678   47.0    4       fuzzy
+SEQ01  4624    4770    42.4693877551   10.7540886845   54.0    3       fuzzy
+SEQ01  4781    4927    35.0068027211   6.49698684597   44.0    3       fuzzy
+SEQ01  4973    5119    39.2448979592   14.868398592    60.0    0       fuzzy
+SEQ01  5103    5249    24.8707482993   7.21041584924   32.0    3       fuzzy
+SEQ01  5269    5415    18.4489795918   3.76916178897   16.0    3       fuzzy
+SEQ01  5387    5533    28.2517006803   7.58161357856   41.0    3       fuzzy
+SEQ01  5557    5703    29.1972789116   13.2596464466   49.0    2       well
+SEQ01  5707    5853    32.8843537415   11.6487814357   48.0    4       fuzzy
+SEQ01  5904    6050    53.3333333333   21.8162809245   91.0    4       fuzzy
+SEQ01  6071    6217    44.4557823129   9.44099563275   60.0    3       fuzzy
+SEQ01  6277    6423    37.8979591837   12.0106158791   57.0    4       fuzzy
+SEQ01  6473    6619    45.2380952381   20.1052784667   75.0    2       well
+SEQ01  6634    6780    40.1020408163   24.3066393589   79.0    2       well
+SEQ01  6817    6963    55.768707483    30.0518979733   103.0   2       well
+...
+```
+
+The mean is computed with occupancy value for all positions of the defined nucleosome (147 bp long).
+
+For further analysis or visualization, the --bed option exports positioned nucleosomes per cluster and the --wig option exports the smoothed signal used to classify occupancy values.
 We also export the clustering as a cartoon to easily visualize the average profile of each cluster.
 
+<img src="doc/images/clusters-2.png">
 
+If you find few very-well, well positioned and a remarkably number of fuzzy, you can try the --refine option, that will relaunch a clustering on fuzzy positioned with a relaxed classification. See below the upper analysis with a refined clustering.
+
+<img src="doc/images/cluster-2-refine.png"> 
 
 ## Analyze di-nucleotide composition
 
