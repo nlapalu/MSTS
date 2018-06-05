@@ -1,7 +1,9 @@
 # MSTS_detect_nucleosomes.py
 
-This tool detects and classifies nucleosomes from a bigWig file. Firstly, It performs a gaussian smoothing on the data. Then nucleosomes are detected with a greedy algorithm based on signal value and 147bp space constraint. Then It launches two clustering steps: 1/ a hierarchical clustering, done in several iterations with random subsets of data. This step defined the most probable number of clusters expected 2/ a KMeans clustering on all data with the previously defined number of cluster. 
-Clusters are then exported in several formats (bed, wig).
+This tool detects and classifies nucleosomes from a bigWig file. Firstly, It performs a gaussian smoothing on the data. Then nucleosomes are detected with a greedy algorithm based on signal value and 147bp space constraint. To relax this stringent space constraint, we allow an overlap of 30 bp by default. Then It launches two clustering steps: 1/ a hierarchical clustering, done in several iterations with random subsets of data. This step defined the most probable number of clusters expected 2/ a KMeans clustering on all data with the previously defined number of cluster. 
+Clusters are then exported in several formats (txt, bed, wig) classified as "very-well", "well", "fuzzy" and "bad positioned". The classification is done on the average profile.
+A "refined" clustering step could be launched on fuzzy nucleosomes with a relaxed cut-off to refine possible sub-clusters. 
+ 
 
 ## Usage and options
 
@@ -33,6 +35,9 @@ or
 | `-df, --distanceFactor` | factor used to compute distance when iterating with hierarchical clustering, (factor_distance X max(distances) default=0.3, range[0.1-0.9] |
 | `-nbi, --nbIterations` | nb iteration for hierarchical clustering, default=500 |
 | `-nbn, --nbNucHC` | nb nucleosomes to sample for hierarchical clustering, default=2000 |
+| `-mic, --minCov` | minimum coverage of dyad to keep the nucleosome, by default 20% of median, default=0.2 |
+| `-ov, --overlap` | Allow overlap between nucleosomes, default=30 |
+| `--refine` | Refine detection on nucleosome classified as fuzzy and bad, default=false |
 | `-t, --title` | title text |
 | `-x, --xax` | x axis text |
 | `-y, --yax` | y axis text |
@@ -70,7 +75,7 @@ SEQ1        7404    7551    34.6258503401   21.2968046801   53.0    0       fuzz
 
 #### cluster plot
 
-After the K-Means clustering, we also generate a catoon with several plots. The main plot (on the right) displays the average profil for each detected clusters. On the left, there is a plot for each cluster with the average profil, the first and third quartile (gray) and the extrem values (specific color). We report also the number of nucleosomes affected to each cluster and the associated classification (very-well, well, fuzzy, bad).
+After the K-Means clustering, we also generate a cartoon with several plots. The main plot (on the right) displays the average profil for each detected clusters. On the left, there is a plot for each cluster with the average profil, the first and third quartile (gray) and the extrem values (specific color). We report also the number of nucleosomes affected to each cluster and the associated classification (very-well, well, fuzzy, bad).
 
 <img src="images/clusters.png"> 
 
