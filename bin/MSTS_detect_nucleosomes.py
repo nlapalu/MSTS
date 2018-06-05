@@ -7,6 +7,7 @@ import argparse
 import pyBigWig
 import math
 import random
+import copy
 
 from collections import Counter
 
@@ -73,7 +74,7 @@ def export(fOut,lNucleosomes):
 
     with open(fOut,'a') as f:
         for nuc in lNucleosomes:
-            f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(nuc[0],nuc[1]+1,nuc[2]+1,nuc[3],nuc[4],nuc[5],nuc[6],nuc[7]))
+            f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(nuc[0],nuc[1]+1,nuc[2],nuc[3],nuc[4],nuc[5],nuc[7],nuc[8]))
     f.close()
 
 def exportBed(fOut,lNucleosomes):
@@ -125,8 +126,38 @@ def clusterClassifier(lStats):
             lKClassif[i] = 'very-well'
         elif tot >= 0.80:
             lKClassif[i] = 'well'
-        else:
+        elif tot >= 0.65:
             lKClassif[i] = 'fuzzy'
+        else:
+            lKClassif[i] = 'bad'
+        # middle position > 60 and < 86
+        peak = 0.0
+        peakPos = 0
+        for j,mean in enumerate(k[0]):
+            #print mean
+            if mean > peak:
+                peakPos = j
+                peak = mean
+        if peakPos < 60 or peakPos > 86:
+            lKClassif[i] = 'bad'
+            
+    return lKClassif
+
+def clusterClassifierRelaxed(lStats):
+    """Classify clusters"""
+
+    lKClassif = ['NA']*len(lStats)
+    for i,k in enumerate(lStats):
+       # pseudo-area todo with AUC
+        tot = sum([k[0][j] for j in range(26,121)])
+        if tot >= 0.85:
+            lKClassif[i] = 'very-well'
+        elif tot >= 0.75:
+            lKClassif[i] = 'well'
+        elif tot >= 0.65:
+            lKClassif[i] = 'fuzzy'
+        else:
+            lKClassif[i] = 'bad'
         # middle position > 60 and < 86
         peak = 0.0
         peakPos = 0
@@ -168,6 +199,9 @@ if __name__ == "__main__":
     parser.add_argument("-df","--distanceFactor", help="factor used to compute distance when iterating with hierarchical clustering, (factor_distance X max(distances)  default=0.3, range[0.1-0.9]", type=float, default=0.3)
     parser.add_argument("-nbi","--nbIterations", help="nb iteration for hierarchical clustering, default=500", type=int, default=500)
     parser.add_argument("-nbn","--nbNucHC", help="nb nucleosomes to sample for hierarchical clustering, default=2000", type=int, default=2000)
+    parser.add_argument("-mic", "--minCov", help="minimum coverage of dyad to keep the nucleosome, by default 20% of median, default=0.2", type=float, default=0.2) 
+    parser.add_argument("-ov", "--overlap", help="Allow overlap between nucleosomes, default=30", type=int, default=30)
+    parser.add_argument("--refine", help="Refine detection on nucleosome classified as fuzzy and bad, default=true", action="store_true", default=False)
     parser.add_argument("-t", "--title", help="title text", type=str, default="Nucleosome profil clustering")
     parser.add_argument("-x", "--xax", help="x axis text", type=str, default="window bp")
     parser.add_argument("-y", "--yax", help="y axis text", type=str, default="proportion, %")
@@ -191,6 +225,8 @@ if __name__ == "__main__":
 
 
     prepare_export("{}.nucleosomes.txt".format(args.prefix))
+    if args.refine:
+        prepare_export("{}.refine.nucleosomes.txt".format(args.prefix))
 
     if args.wig:
         printWigHeader()
@@ -243,7 +279,7 @@ if __name__ == "__main__":
                     if lSmoothedValues[idx] > 0 and values[idx] != 0:
                         mean = np.mean([values[i] for i in range(max(idx-73+start,start),min(idx+73+1+start,stop))])
                         stdev = np.std([values[i] for i in range(max(idx-73+start,start),min(idx+73+1+start,stop))])
-                        nuc = [chrom,max(idx-73+start,start),min(idx+73+1+start,stop), mean, stdev,values[idx]]
+                        nuc = [chrom,max(idx-73+start,start),min(idx+73+1+start,stop), mean, stdev,values[idx],[]]
                         lNucleosomes.append(nuc)
                         lAllNucleosomes.append(nuc)
                         lProfils.append([values[x] for x in range(idx-73,idx+73+1)])
@@ -251,8 +287,9 @@ if __name__ == "__main__":
                         tot = sum([values[x] for x in range(idx-73,idx+73+1+1)])
                         lProfilNorms.append([values[x]/tot for x in range(idx-73,idx+73+1)])
                         lAllProfilNorms.append([values[x]/tot for x in range(idx-73,idx+73+1)])
-                        limit1 = max(idx-147,0)
-                        limit2 = min(idx+147,len(lSmoothedValues))
+                        nuc[6] = [values[x]/tot for x in range(idx-73,idx+73+1)]
+                        limit1 = max(idx-147+args.overlap,0)
+                        limit2 = min(idx+147-args.overlap,len(lSmoothedValues))
                         for i in range(limit1,limit2):
                             lSmoothedValues[i] = 0 
 
@@ -266,6 +303,28 @@ if __name__ == "__main__":
 ##            lSortedNucleosomes = sorted(lNucleosomes, key=lambda nuc: nuc[1])
 ##            export("{}.nucleosomes.txt".format(args.prefix),lSortedNucleosomes)
     logging.info("{} nucleosomes detected ans positioned for all sequences".format(len(lAllProfilNorms)))
+
+    median = np.median([nuc[5] for nuc in lAllNucleosomes])
+
+    lCleanNuc = []
+    lCleanProfils = []
+    lCleanNormProfils = []
+    nbNucFiltered = 0  
+    for i,nuc in enumerate(lAllNucleosomes):
+        if nuc[5] > median*args.minCov:
+            lCleanNuc.append(nuc)
+            lCleanProfils.append(lAllProfils[i])
+            lCleanNormProfils.append(lAllProfilNorms[i])
+        else:
+            nbNucFiltered += 1
+
+    lAllNucleosomes = lCleanNuc
+    lAllProfils = lCleanProfils
+    lAllProfilNorms = lCleanNormProfils
+            
+    logging.info("{} nucleosomes detected ans positioned for all sequences after filter of mincov: {}, median: {}, {} nucleosomes removed".format(len(lAllProfilNorms),median*args.minCov,median,nbNucFiltered))
+
+ 
 
     # step 1: hierarchical clustering on subset (X iter)
     lhClusters = []
@@ -327,20 +386,158 @@ if __name__ == "__main__":
     lKClassif = clusterClassifier(lStats)
     # add position info
     for nuc in lAllkNucleosomes:
-        nuc.append(lKClassif[nuc[6]])
-
+        nuc.append(lKClassif[nuc[7]])
 
     lSortedAllkNucleosomes = sorted(lAllkNucleosomes, key=lambda nuc: (nuc[0],nuc[1]))
 #    export("k{}.clusters.txt".format(idx),lSortedlkNucleosomes)
+    if not args.refine:
+        export("{}.nucleosomes.txt".format(args.prefix),lSortedAllkNucleosomes)
     export("{}.nucleosomes.txt".format(args.prefix),lSortedAllkNucleosomes)
 #        lSortedlkNucleosomes = sorted(lkNucleosomes, key=lambda nuc: (nuc[1],nuc[2]))
 #        export("k{}.clusters.txt".format(idx),lSortedlkNucleosomes)
 #    lClassification = clusterClassifier(lKs)
 
     if args.bed:
-        for k in range(0,nbClusters):
-            exportBed("{}.k{}-{}.cluster.bed".format(args.prefix,k,lKClassif[k]),[x for x in lSortedAllkNucleosomes if x[6] == k])
+        if not args.refine:
+            for k in range(0,nbClusters):
+                exportBed("{}.k{}-{}.cluster.bed".format(args.prefix,k,lKClassif[k]),[x for x in lSortedAllkNucleosomes if x[7] == k])
 
     logging.info("Drawing clusters in {}.clusters.png".format(args.prefix))
     Graphics.plotDistributionWithLimits([i for i in range(1,148)],lStats,lKClassif,out="{}.clusters.png".format(args.prefix), title=args.title,xax=args.xax, yax=args.yax,legend=lKs)
- 
+
+
+    if args.refine: 
+        lStatInit = []
+        lKClassifInit = []
+        lKInit = []
+        dReorder = {}
+        Idx = 0
+        for i,val in enumerate(lStats):
+            if lKClassif[i] not in ["fuzzy", "bad"]:
+                lStatInit.append(lStats[i])
+                lKClassifInit.append(lKClassif[i])
+                lKInit.append(lKs[i])
+                dReorder[i] = Idx
+                Idx += 1
+
+        lRefinedNuc = copy.deepcopy([ nuc for nuc in lSortedAllkNucleosomes if nuc[8] not in ["fuzzy", "bad"] ])
+        for nuc in lRefinedNuc:
+            nuc[7] = dReorder[nuc[7]] 
+        print len(lRefinedNuc)
+
+        NbClusInit = len(lKInit)
+
+        for Kclass in ["fuzzy", "bad"]:
+            logging.info("refine {} nucleosomes: re-clustering".format(Kclass))
+
+            lAllNucleosomesFuzzy = copy.deepcopy([nuc for nuc in lSortedAllkNucleosomes if nuc[8] == Kclass ])
+            lnucFuzzy = [nuc[6] for nuc in lSortedAllkNucleosomes if nuc[8] == Kclass ] 
+            print len(lAllNucleosomesFuzzy) 
+
+            lhClusters = []
+            logging.info("hierarchical clustering: {} iterations with {} nucleosomes".format(args.nbIterations, args.nbNucHC))
+            for nbIt in range(0,args.nbIterations):
+                lHProfils = []
+                for i in range(0,args.nbNucHC):
+                    lHProfils.append(lnucFuzzy[random.randint(0,len(lnucFuzzy)-1)])
+                x = np.array(lHProfils)
+                Z = linkage(x, 'ward')
+                t = args.distanceFactor*max(Z[:,2])
+                ar = fcluster(Z,t,criterion='distance')
+
+                hClusters = set()
+                for i in np.nditer(ar):
+                   hClusters.add(int(i))
+                lhClusters.append(len(hClusters))
+                logging.debug("hierachical clustering iter: {}, nb clusters: {}".format(nbIt,len(hClusters)))
+
+            dClusters = Counter(lhClusters)
+            nbClusters = sorted(dClusters.items(), key=lambda x:x[1], reverse=True)[0][0]
+            logging.info("{} clusters defined after {} iterations".format(nbClusters,args.nbIterations))
+
+            # step 2: k-means clustering with pre-defined nb clusters
+            logging.info("Performing K-Means clustering") 
+            lkmeans = KMeans(n_clusters=nbClusters,random_state=185).fit_predict(lnucFuzzy)
+            lStats = []
+            lKs = [0]*nbClusters
+            lAllkNucleosomesFuzzy = []
+            logging.info("Extracting info from clustering")
+            for k in range(0,nbClusters):
+                lkProfils = []
+               # lkNucleosomes = []
+                j = 0
+                for i in np.nditer(lkmeans):
+                    if i == k:
+                        lkProfils.append(lnucFuzzy[j])
+                #        lkNucleosomes.append(lAllNucleosomesFuzzy[j])
+                        # add cluster info
+                        lAllNucleosomesFuzzy[j][7] = k + NbClusInit
+                        lAllkNucleosomesFuzzy.append(lAllNucleosomesFuzzy[j])
+                        if lAllNucleosomesFuzzy[j][1] == 28174:
+                            print "ye"
+                        lKs[k] += 1
+                    j+=1 
+
+                lmeank = [0.0]*147
+                lmink = [0.0]*147
+                lmaxk = [0.0]*147
+                lquartile1 = [0.0]*147
+                lquartile3 = [0.0]*147
+                for i in range(0,147):
+                    lmeank[i] = np.mean([x[i] for x in lkProfils])
+                    lmink[i] = min([x[i] for x in lkProfils])
+                    lmaxk[i] = max([x[i] for x in lkProfils])
+                    lquartile1[i] = np.percentile([x[i] for x in lkProfils],25)
+                    lquartile3[i] = np.percentile([x[i] for x in lkProfils],75)
+                lStats.append([lmeank,lmink,lmaxk, lquartile1, lquartile3])
+
+
+            lKClassif = clusterClassifierRelaxed(lStats)
+            # add position info
+            for nuc in lAllkNucleosomesFuzzy:
+                nuc[8] = lKClassif[nuc[7] - NbClusInit]
+
+
+
+
+#        lSortedAllkNucleosomesFuzzy = sorted(lAllkNucleosomesFuzzy, key=lambda nuc: (nuc[0],nuc[1]))
+#    export("k{}.clusters.txt".format(idx),lSortedlkNucleosomes)
+#    export("{}.nucleosomes.txt".format(args.prefix),lSortedAllkNucleosomes)
+#        lSortedlkNucleosomes = sorted(lkNucleosomes, key=lambda nuc: (nuc[1],nuc[2]))
+#        export("k{}.clusters.txt".format(idx),lSortedlkNucleosomes)
+#    lClassification = clusterClassifier(lKs)
+
+            logging.info("Drawing clusters in {}.clusters.{}.png".format(args.prefix, Kclass))
+            Graphics.plotDistributionWithLimits([i for i in range(1,148)],lStats,lKClassif,out="{}.clusters.refine.{}.png".format(args.prefix,Kclass), title="{} - refine {}".format(args.title,Kclass),xax=args.xax, yax=args.yax,legend=lKs)
+
+
+            NbClusInit += len(lKs)
+            lKInit.extend(lKs)
+            lRefinedNuc.extend(lAllkNucleosomesFuzzy)
+            lStatInit.extend(lStats)
+            lKClassifInit.extend(lKClassif)
+           
+
+          
+#        lSortedAllkNucleosomesNew = []
+        lSortedRefinedNuc = sorted(lRefinedNuc, key=lambda nuc: (nuc[0],nuc[1]))
+#        for i,nuc in enumerate(lSortedAllkNucleosomes):
+#            for j,nuc2 in enumerate(lSortedRefinedNuc[i:]):
+#                if (nuc[0],nuc[1]) == (nuc2[0],nuc2[1]):
+#                    lSortedAllkNucleosomesNew.append(nuc2)
+#                    break
+#                else:
+#                    lSortedAllkNucleosomesNew.append(nuc)
+#                    break
+#        print "BUG EXPORT"
+        export("{}.refine.nucleosomes.txt".format(args.prefix),lSortedRefinedNuc)
+
+
+        logging.info("Drawing refined clusters in {}.clusters.refine.png".format(args.prefix))
+        Graphics.plotDistributionWithLimitsRefine([i for i in range(1,148)],lStatInit,lKClassifInit,out="{}.clusters.refine.png".format(args.prefix), title="{} - refined clusters".format(args.title),xax=args.xax, yax=args.yax,legend=lKInit)
+
+        if args.bed:
+            for k in range(0,NbClusInit):
+                exportBed("{}.k{}-{}.cluster.refine.bed".format(args.prefix,k,lKClassifInit[k]),[x for x in lSortedRefinedNuc if x[7] == k])
+
+
