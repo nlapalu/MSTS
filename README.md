@@ -181,8 +181,22 @@ With the '--flush' option, you can export the data to merge all phasograms on si
 
 ## Detect and classify nucleosomes
 
+For most of available tools, the nucleosome detection and positioning are based on a simply greedy approach that consist for each sequence:
+- descending sort of occupancy values for each position
+- defining nucleosome positions from the highest occupancy value to the lowest with a constraint of 147bp.
+- limiting peak detection to a min/max coverage
 
-`MSTS_detect_nucleosomes.py`  
+More sophiscated tool, defined TBB (ref), that allow several positions for the same nucleosome ... 
+
+In your case, we decided to keep the conventional protocole to define an average position, allowing a possible overlap between nucleosome in case of fuzzy area (30bp by default). Moreover, we perform a clustering and classification to propose confidence level in nucleosome positioning. We define 4 categories: "very-well", "well", "fuzzy" and "bad" positioned. 
+
+`MSTS_detect_nucleosomes.py mapping.bw -p detection --bed --wig `
+
+You get the list of detected nucleosomes in __detection_nucleosomes.txt__ 
+
+For further analysis or visualization, the --bed option export positioned nucleosomes per cluster and the --wig option, the smoothed signal use to classify occupancy values.
+We also export the clustering as a cartoon to easily visualize the average profile of each cluster.
+
 
 
 ## Analyze di-nucleotide composition
