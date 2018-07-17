@@ -74,8 +74,11 @@ SEQ03	1429328	64.5	0.0670176181358	24.0555555556	0.155987480746	0.372954349699	9
 We perform a hierarchical clustering of raw and normalized data. For each clustering we export a dendogram to analyze the homogeneity of replicats vs conditions. 
 
 _hierarchical clustering of raw data_
+
 <img src="images/out_diff_hc_raw.png"> 
+
 _hierarchical clustering of normalized data_
+
 <img src="images/out_diff_hc_norm.png"> 
 
 
