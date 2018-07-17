@@ -292,6 +292,7 @@ We propose a simple
 * [MSTS_count_TPM.py](doc/MSTS_count_TPM.md)
 * [MSTS_dinuc_frequency.py](doc/MSTS_dinuc_frequency.md)
 * [MSTS_detect_nucleosomes.py](doc/MSTS_detect_nucleosomes.md)
+* [MSTS_nucleosome_difference.py](doc/MSTS_nucleosome_difference.md)
 
 ## MSTS overview
 
