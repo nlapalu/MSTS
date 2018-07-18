@@ -4,8 +4,7 @@ import math
 import numpy as np
 import matplotlib
 
-#matplotlib.use('Agg')
- 
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from matplotlib.backends.backend_agg import FigureCanvasAgg
@@ -23,7 +22,7 @@ class Graphics(object):
         pass
 
     @staticmethod
-    def plotDistribution(lXs, lYs, out="", title="", xax="", yax="", color="blue", legend=""):
+    def plotDistribution(lXs, lYs, out="", title="", xax="", yax="", color="blue", legend="", grid=[]):
         """Draw a simple Distribution"""
 
         fig = plt.Figure(figsize=(20,20))
@@ -31,7 +30,9 @@ class Graphics(object):
         ax = fig.add_subplot(111)
         ax.plot(lXs,lYs, color=color)
         if legend:
-            ax.legend(legend)
+            ax.legend(legend, fontsize=22)
+        for line in grid:
+            ax.axvline(x=line, linestyle='dashed', linewidth=1, color='black')
         axis_font = {'size':'28'}
         ax.set_xlabel(xax, **axis_font)
         ax.set_ylabel(yax, **axis_font)
@@ -41,7 +42,7 @@ class Graphics(object):
 
 
     @staticmethod
-    def plotMultiDistribution(lXs, llYs, out="", title="", xax="", yax="", color=['blue','green'],legend=""):
+    def plotMultiDistribution(lXs, llYs, out="", title="", xax="", yax="", color=['blue','green'],legend="", grid=[]):
         """Draw multi Distributions"""
 
         fig = plt.Figure(figsize=(20,20))
@@ -54,7 +55,9 @@ class Graphics(object):
         ax.set_ylabel(yax, **axis_font)
         ax.tick_params(labelsize=20)
         if legend:
-            ax.legend(legend)
+            ax.legend(legend, fontsize=22)
+        for line in grid:
+            ax.axvline(x=line, linestyle='dashed', linewidth=1, color='black')
         canvas = FigureCanvasAgg(fig)
         canvas.print_figure(out, dpi=80)
 
@@ -170,6 +173,47 @@ class Graphics(object):
         canvas = FigureCanvasAgg(fig)
         canvas.print_figure(out, dpi=80)
 
+    @staticmethod
+    def plotDistributionWithLimitsRefine(lXs, llYs, lKClassif,out="out.png", title="title", xax="xax", yax="yax",legend=""):
+        """Draw distributions with upper and lower limits"""
+
+        fig = plt.Figure(figsize=(40,20))
+        fig.suptitle(title, fontsize=32)
+        nbPlots = len(llYs)
+        sqrt = int(math.ceil(math.sqrt(nbPlots)))
+        ymax = 0.0
+        for i,val in enumerate(llYs):
+            if lKClassif[i] != "refine":
+                ymax = max(max(val[0]),ymax)
+                ymaxCurrent = max(max(val[2]),ymax)
+        ymax = ymax*1.05
+        xmax = 147
+        gs = gridspec.GridSpec(1,2) 
+        ax = fig.add_subplot(gs[0])
+        gsLimit = gridspec.GridSpecFromSubplotSpec(sqrt,sqrt, subplot_spec=gs[1])
+        for i,val in enumerate(llYs):
+            if lKClassif[i] != "refine":
+                ax.plot(lXs,val[0],color=Graphics.lColors[i])
+                axCurrent = fig.add_subplot(gsLimit[i]) 
+                axCurrent.fill_between(lXs, val[1], val[2], alpha=0.35, edgecolor='black', facecolor=Graphics.lColors[i])
+                axCurrent.set_title("Cluster K{}, (position: {})".format(i,lKClassif[i]))
+                axCurrent.fill_between(lXs, val[3], val[4], alpha=0.85, edgecolor='darkgray', facecolor='lightgray')
+                axCurrent.plot(lXs,val[0],color=Graphics.lColors[i])
+                axCurrent.set_ylim(0,ymaxCurrent)
+                axCurrent.set_xlim(1,xmax)
+                axCurrent.text(10, ymaxCurrent*0.90, "#nucleosomes: {}".format(legend[i]), fontsize=12)
+        axis_font = {'size':'28'}
+        ax.set_ylim(0,ymax)
+        ax.set_xlim(1,xmax)
+        ax.legend(["K{}".format(x) for x in range(0,nbPlots)])
+        ax.set_title("all nucleosomes", **axis_font)
+        ax.set_xlabel(xax, **axis_font)
+        ax.set_ylabel(yax, **axis_font)
+        ax.tick_params(labelsize=20)
+        canvas = FigureCanvasAgg(fig)
+        canvas.print_figure(out, dpi=80)
+
+
 
     @staticmethod
     def plotDistributionWithLimitsOld(lXs, llYs ,out="out.png", title="title", xax="xax", yax="yax",legend=""):
@@ -219,7 +263,7 @@ class Graphics(object):
         fig = plt.Figure()
         fig.suptitle(title, fontsize=32)
         ax = fig.add_subplot(111)
-        dendrogram(
+        i = dendrogram(
             lXs,
             leaf_rotation=90.,  # rotates the x axis labels
             leaf_font_size=8.,  # font size for the x axis labels
@@ -232,8 +276,9 @@ class Graphics(object):
         ax.set_xlabel(xax, **axis_font)
         ax.set_ylabel(yax, **axis_font)
         ax.tick_params(labelsize=20)
-        plt.show()
-#        plt.savefig(out,dpi=80, format='png', bbox_inches='tight')
+        #plt.show()
+        plt.savefig(out,dpi=80, format='png', bbox_inches='tight')
+        plt.close()
 #        canvas = FigureCanvasAgg(fig)
 #        canvas.print_figure(out, dpi=80)
 
@@ -242,8 +287,8 @@ class Graphics(object):
     def plotAutocorrelation(lXs, lYs, out="out.png", title="title", xax="xax", yax="yax"):
         """Draw autocorrelation plot, return list of autocorrelation coefficients"""
 
-        print len(lXs)
-        print len(lYs)
+#        print len(lXs)
+#        print len(lYs)
         lRhs = []
         Ym = np.mean(lYs)
         N = len(lYs)
@@ -271,4 +316,20 @@ class Graphics(object):
         canvas.print_figure(out, dpi=80)
 
         return lRhs
+
+    @staticmethod
+    def plotPValHistogram(lXs, lYs, out="out.png", title="title", xax="xax", yax="yax"):
+        """Draw histogram of p-values"""
+
+        fig = plt.Figure(figsize=(20,20))
+        fig.suptitle(title, fontsize=32)
+        ax = fig.add_subplot(111)
+        ax.hist(lXs,lYs)
+        axis_font = {'size':'28'}
+        ax.set_xlabel(xax, **axis_font)
+        ax.set_ylabel(yax, **axis_font)
+        ax.tick_params(labelsize=20)
+        canvas = FigureCanvasAgg(fig)
+        canvas.print_figure(out, dpi=80)
+
 
