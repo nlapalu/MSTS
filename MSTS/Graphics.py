@@ -261,8 +261,8 @@ class Graphics(object):
 
         #fig = plt.Figure(figsize=(20,20))
         fig = plt.Figure()
-        fig.suptitle(title, fontsize=32)
-        ax = fig.add_subplot(111)
+        #fig.suptitle(title, fontsize=32)
+        #ax = fig.add_subplot(111)
         i = dendrogram(
             lXs,
             leaf_rotation=90.,  # rotates the x axis labels
@@ -273,14 +273,17 @@ class Graphics(object):
             #distance_sort='descending'
         )
         axis_font = {'size':'28'}
-        ax.set_xlabel(xax, **axis_font)
-        ax.set_ylabel(yax, **axis_font)
-        ax.tick_params(labelsize=20)
+        #ax.set_xlabel(xax, **axis_font)
+        #ax.set_ylabel(yax, **axis_font)
+        #ax.tick_params(labelsize=20)
+        plt.title = title
+        plt.xlabel = xax 
+        plt.ylabel = yax 
         #plt.show()
         plt.savefig(out,dpi=80, format='png', bbox_inches='tight')
         plt.close()
-#        canvas = FigureCanvasAgg(fig)
-#        canvas.print_figure(out, dpi=80)
+        #canvas = FigureCanvasAgg(fig)
+        #canvas.print_figure(out, dpi=80)
 
 
     @staticmethod
