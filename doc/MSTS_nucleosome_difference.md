@@ -1,6 +1,6 @@
 # MSTS_nucleosome_difference.py
 
-This tool analyzes the signal difference between 2 conditions of Mnase-seq. Several replicats can be use, in this case the average signal is used to  
+This tool analyzes the signal difference between 2 conditions of Mnase-seq. Several replicats can be use, in this case the average signal is used in the analyses. The coefficient of variation is reported for each conditon to filer-out too divergent replicat. In the same manner, we perform a hierarchical clustering on raw and normalized data to validate each replicat.     
  
 
 ## Usage and options
@@ -57,15 +57,16 @@ c2	48	48.nucleosomes.txt	48.mapping.bw
 
 ```
 #ref	pos	mean1	CV1	mean2	CV2	FC	pval	paj
-SEQ02	2382351	18.5	0.453503169321	4.83333333333	0.29663190576	0.261261261261	9.55657641707e-07	5.30708543695e-05
-SEQ10	1502549	94.8333333333	0.0880957937213	25.0555555556	0.0385324771552	0.264206209725	2.49946305688e-28	8.32821090553e-25
-SEQ16	478522	76.2777777778	0.159033448893	26.3888888889	0.251065320213	0.345957756737	1.4851526835e-17	2.47426437071e-14
-SEQ11	1412239	25.5	0.396382462747	9.05555555556	0.541269815954	0.355119825708	1.26326903538e-06	6.75274720728e-05
-SEQ06	2496039	15.6666666667	0.405652680105	5.61111111111	0.528197174984	0.358156028369	0.000159452489247	0.00275759010816
-SEQ02	487219	87.5555555556	0.212336988236	31.4444444444	0.0757454102835	0.359137055838	5.13034431216e-19	1.02565843489e-15
-SEQ09	1719789	63.0	0.192825507938	23.0	0.0709997026894	0.365079365079	7.95261290156e-14	8.83270206266e-11
-SEQ04	549329	47.1111111111	0.0405770059766	17.3333333333	0.102664213962	0.367924528302	1.31864599158e-10	4.54523632134e-08
-SEQ03	1429328	64.5	0.0670176181358	24.0555555556	0.155987480746	0.372954349699	9.74442223612e-14	9.74052446722e-11
+SEQ10	708598	16.2	21.9	2.7	48.7	0.16	7.12e-08	7.45e-06
+SEQ14	253307	13.9	22.5	2.7	31.9	0.19	1.64e-06	8.95e-05
+SEQ18	129813	14.2	40.1	2.9	10.9	0.20	2.25e-06	1.14e-04
+SEQ18	125906	29.6	55.5	6.1	21.4	0.20	8.39e-12	4.10e-09
+SEQ12	30014	10.7	37.7	2.2	74.1	0.21	4.28e-05	1.07e-03
+SEQ18	125912	30.2	69.4	6.3	7.6	0.21	7.18e-12	3.60e-09
+SEQ05	2586933	10.6	20.9	2.3	52.2	0.21	5.81e-05	1.35e-03
+SEQ16	436879	72.4	26.0	15.7	22.7	0.22	1.10e-25	5.24e-22
+SEQ01	3531964	50.8	22.2	11.1	5.0	0.22	2.14e-18	5.00e-15
+SEQ18	125909	30.1	63.3	6.7	16.2	0.22	2.66e-11	1.09e-08
 ...
 ```
 
@@ -81,6 +82,11 @@ _hierarchical clustering of normalized data_
 
 <img src="images/out_diff_hc_norm.png"> 
 
+#### p-values plot
+
+We plot the distribution of p-values to validate the test assumptions. For more explanation see this [page](:http://varianceexplained.org/statistics/interpreting-pvalue-histogram/)
+
+<img src="images/out_hist_pvalues.png"> 
 
 #### bed file (--bed)
 
