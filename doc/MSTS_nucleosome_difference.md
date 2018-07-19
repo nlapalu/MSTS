@@ -86,7 +86,7 @@ _hierarchical clustering of normalized data_
 
 We plot the distribution of p-values to validate the test assumptions. For more explanation see this [page](http://varianceexplained.org/statistics/interpreting-pvalue-histogram/)
 
-<img src="images/out_hist_pvalues.png" width="425"> 
+<img src="images/out_hist_pvalues.png" width="400"> 
 
 #### bed file (--bed)
 

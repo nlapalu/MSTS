@@ -7,7 +7,7 @@
 
 MSTS has been developed to analyse NGS data in the frame of MAINE-Seq experiments and to propose some utilities to draw graph and perform simple statistics on your data.
 
-MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BIOGER](http://www.versailles-grignon.inra.fr/bioger). Please do not hesitate to contact us (nlapalu at inra dot fr) if you have any comments or questions.
+MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BIOGER](http://www.versailles-grignon.inra.fr/bioger). Please do not hesitate to contact us (nicolas.lapalu at inra dot fr) if you have any comments or questions.
 
 # Table of contents
 
@@ -23,10 +23,10 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BI
 	* [Draw feature specific phasogram](#draw-feature-specific-phasogram)
 	* [Analyze relation between Transcript Expression level and nucleosome occupancy](#analyze-relation-between-transcript-expression-level-and-nucleosome-occupancy)
 	* [Detect and classify nucleosomes](#detect-and-classify-nucleosomes)
+	* [Differential signal analysis](#differential-signal-analysis)
 	* [Analyze di-nucleotide composition](#analyze-di-nucleotide-composition)
 		* [From mapped reads](#from-mapped-reads) 
 		* [From detected nucleosome positions](from-detected-nucleosome-positions)
-	* [Differential signal analysis](#differential-signal-analysis)
 * [References](#references)
 
 
@@ -235,6 +235,58 @@ If you find few very-well, well positioned and a remarkably number of fuzzy, you
 
 <img src="doc/images/clusters-2-refine.png"> 
 
+
+## Differential signal analysis
+
+We propose a simple approach to analyze differences between 2 conditions like described in .. et al,. We only analyze positions detected as potential dyad of nucleosomes, with a possible filter on the reliability of each type of nucleosome positioning (default=fuzzy). We use a Poisson distribution with a lambda equals to the normalized peak occupancy for each condition. Then we use a test ratio for two Poisson rates followed by a Benjamini-Hochberg correction for multiple tests. The default normalization method is quantile, but a global scaling (scaling factor defined with the average of number reads in all replicats) is also available.
+In case of multiple replicates, we provide a dendogram of hierarchical clustering to control the homogeneity of replicates. In the same manner, the p-value plot allow you to validate the expected results.
+The user must provide a design file with link to all required files. 
+
+__*design file:*__
+
+```
+#condition	label	nucfile	bigwigfile
+c1	43	43.nucleosomes.txt	43.mapping.bw
+c1	44	44.nucleosomes.txt	44.mapping.bw
+c1	45	45.nucleosomes.txt	45.mapping.bw
+c2	46	46.nucleosomes.txt	46.mapping.bw
+c2	47	47.nucleosomes.txt	47.mapping.bw
+c2	48	48.nucleosomes.txt	48.mapping.bw
+```
+
+`MSTS_nucleosome_difference.py design.txt -v 2 -p C1vsC2 -f 2.0 -a 0.05 --bed --merge` 
+
+__*result file:*__
+
+We only export positions with potential difference in signal with 
+defined thresholds (default: FC=2.0 and alpha=0.05).
+
+```
+#ref	pos	mean1	CV1	mean2	CV2	FC	pval	paj
+SEQ10	708598	16.2	21.9	2.7	48.7	0.16	7.12e-08	7.45e-06
+SEQ14	253307	13.9	22.5	2.7	31.9	0.19	1.64e-06	8.95e-05
+SEQ18	129813	14.2	40.1	2.9	10.9	0.20	2.25e-06	1.14e-04
+SEQ18	125906	29.6	55.5	6.1	21.4	0.20	8.39e-12	4.10e-09
+SEQ12	30014	10.7	37.7	2.2	74.1	0.21	4.28e-05	1.07e-03
+SEQ18	125912	30.2	69.4	6.3	7.6	0.21	7.18e-12	3.60e-09
+SEQ05	2586933	10.6	20.9	2.3	52.2	0.21	5.81e-05	1.35e-03
+SEQ16	436879	72.4	26.0	15.7	22.7	0.22	1.10e-25	5.24e-22
+SEQ01	3531964	50.8	22.2	11.1	5.0	0.22	2.14e-18	5.00e-15
+SEQ18	125909	30.1	63.3	6.7	16.2	0.22	2.66e-11	1.09e-08
+...
+```
+
+
+__*companion plots*__
+
+_hierarchical clustering_:
+
+<img src="doc/images/out_diff_hc_norm.png"> 
+
+_p-values plot_:
+
+<img src="doc/images/out_hist_pvalues.png" width="400"> 
+
 ## Analyze di-nucleotide composition
 
 The di-nucleotide pattern AT/GC with a frequence of 10 bp for nucleosome fixation site has been largely described (ref) and proposed to be used as data quality control (*S.Hu et al. 2017*). You can perform a such analysis on your mapping data converted in bigBed file with MSTS_converter.py
@@ -255,34 +307,27 @@ You can also control your nucleosome detection and classification with this tool
 
 __*bad positioned nucleosomes:*__
 
-`python MSTS_dinuc_frequency.py genome.fasta detect.k1-bad.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_bad -ami -65 -amx 65`
+`MSTS_dinuc_frequency.py genome.fasta detect.k1-bad.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_bad -ami -65 -amx 65`
 
 <img src="doc/images/detect_dinuc_bad_ATGC_Normalized.png" width="425"> <img src="doc/images/detect_dinuc_bad_ATGC_Correlogram.png" width="425">
 
 __*fuzzy positioned nucleosomes:*__
 
-`python MSTS_dinuc_frequency.py genome.fasta detect.k2-fuzzy.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_fuzzy -ami -65 -amx 65`
+`MSTS_dinuc_frequency.py genome.fasta detect.k2-fuzzy.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_fuzzy -ami -65 -amx 65`
 
 <img src="doc/images/detect_dinuc_fuzzy_ATGC_Normalized.png" width="425"> <img src="doc/images/detect_dinuc_fuzzy_ATGC_Correlogram.png" width="425">
 
 __*well positioned nucleosomes:*__
 
-`python MSTS_dinuc_frequency.py genome.fasta detect.k3-well.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_well -ami -65 -amx 65`
+`MSTS_dinuc_frequency.py genome.fasta detect.k3-well.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_well -ami -65 -amx 65`
 
 <img src="doc/images/detect_dinuc_well_ATGC_Normalized.png" width="425"> <img src="doc/images/detect_dinuc_well_ATGC_Correlogram.png" width="425">
 
 __*very-well positioned nucleosomes:*__
 
-`python MSTS_dinuc_frequency.py genome.fasta detect.k4-very-well.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_very-well -ami -65 -amx 65`
+`MSTS_dinuc_frequency.py genome.fasta detect.k4-very-well.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_very-well -ami -65 -amx 65`
 
 <img src="doc/images/detect_dinuc_very-well_ATGC_Normalized.png" width="425"> <img src="doc/images/detect_dinuc_very-well_ATGC_Correlogram.png" width="425">
-
-
-## Differential signal analysis
-
-We propose a simple  
-
-
 
 # Tool documentations
 
