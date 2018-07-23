@@ -37,8 +37,8 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BI
 ### External tools
 
 * samtools
-* wigToBigWig (Kent's tools)
-* bedToBigBed (Kent's tools)
+* wigToBigWig [Kent's tools](https://github.com/ENCODE-DCC/kentUtils)
+* bedToBigBed [Kent's tools](https://github.com/ENCODE-DCC/kentUtils)
 
 ## Install  (DEV mode !!!)
 
