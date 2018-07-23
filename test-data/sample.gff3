@@ -24,7 +24,7 @@ seq2	bioinfobioger	exon	139642	139709	0	+	.	ID=G4E2;Parent=T4;gene_id=G4
 seq2	bioinfobioger	exon	139642	139700	0	+	.	ID=G4E2.2;Parent=T4.2;gene_id=G4
 seq2	bioinfobioger	exon	139790	140054	0	+	.	ID=G4E3;Parent=T4;gene_id=G4
 seq2	bioinfobioger	exon	140150	140931	0	+	.	ID=G4E4;Parent=T4;gene_id=G4
-seq2	bioinfobioger	exon	140900	143300	0	+	.	ID=G4E4;Parent=T4.2;gene_id=G4
+seq2	bioinfobioger	exon	140900	143300	0	+	.	ID=G4E4.2;Parent=T4.2;gene_id=G4
 seq2	bioinfobioger	CDS	139543	139555	.	+	0	ID=G4C1;Name=G4C1;Parent=T4;gene_id=G4
 seq2	bioinfobioger	CDS	139642	139709	.	+	2	ID=G4C1;Name=G4C1;Parent=T4;gene_id=G4
 seq2	bioinfobioger	CDS	139790	140054	.	+	0	ID=G4C1;Name=G4C1;Parent=T4;gene_id=G4
