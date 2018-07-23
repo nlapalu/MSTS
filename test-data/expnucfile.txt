@@ -1,0 +1,6 @@
+#condition	label	nucfile	bigwigfile
+c1	1	nucfile1.1	bwfile1.1
+c1	2	nucfile1.2	bwfile1.2
+c2	3	nucfile2.1	bwfile2.1
+c2	4	nucfile2.2	bwfile2.2
+c2	5	nucfile2.3	bwfile2.3
