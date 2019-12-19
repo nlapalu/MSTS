@@ -26,7 +26,7 @@ if __name__ == '__main__':
     parser.add_argument("-t","--featType", help="Feature type choice for counts [exon,cds], default=exon", type=str, default="exon")
     parser.add_argument("-m","--minNbFrags", help="Minimum number of fragment per trancript to \
                         compute mean fragment length, [default=3]", type=int,
-                        default=3) 
+                        default=3)
     parser.add_argument("-s","--stranded", help="Define which fragments take into account\
                         for computing mean fragment length and counts. If your reads are \
                         not oriented, set to \"no\" as default, if not use \"yes\" or \
