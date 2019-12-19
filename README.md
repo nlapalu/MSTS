@@ -1,8 +1,3 @@
-
-
-
-
-
 # MSTS: MAINE-Seq Tool Suite
 
 MSTS has been developed to analyse NGS data in the frame of MAINE-Seq experiments and to propose some utilities to draw graph and perform simple statistics on your data.
@@ -174,7 +169,7 @@ MSTS_feature_phasogram.py mapping.bw genes.gff3 -v 2 -o myfeaturestartphasogram1
 <img src="doc/images/myfeaturestartphasogram5-1.png" width=425><img src="doc/images/myfeaturestartphasogram1.png" width=425>
 
 
-With the '--flush' option, you can export the data to merge all phasograms on single one as below. [Here](doc/MergedPhasogram.md) you will find a piece of code to generate the "merged phasogram". 
+With the '--flush' option, you can export the data to merge all phasograms on single one as below, with `MSTS_merge_phasograms.py`. [Here](doc/MSTS_merger_phasograms.md) you will find a piece of code to generate the "merged phasogram". 
 
 <div align="center"><img src="doc/images/phaso.merge.png" width=650></div>
 
