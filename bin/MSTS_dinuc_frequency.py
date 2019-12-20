@@ -74,10 +74,10 @@ if __name__ == '__main__':
 
     if args.autocorMin < -args.distance:
         logging.error("autcorMin value too small: {}, minimum is: {}".args.autocorMin, -args.distance)
-        sys.exit(1) 
+        sys.exit(1)
     if args.autocorMax > args.distance:
         logging.error("autcorMax value too high: {}, maximum is: {}".args.autocorMax, args.distance)
-        sys.exit(1) 
+        sys.exit(1)
 
 
     lFreqATs = [0.0]*(args.distance*2+1)
@@ -89,16 +89,20 @@ if __name__ == '__main__':
     bb = pyBigWig.open(args.BigBedFile)
     sequences = Fasta(args.FastaFile)
     for seq in sequences.keys():
-#        if nb == 50000:
+#        if nb == 500000:
 #            break
         logging.info('Retrieving sequences in: {}'.format(seq))
         if seq not in bb.chroms().keys():
             continue
         lEntries = bb.entries(seq, 0, bb.chroms(seq))
         for entry in lEntries:
-            middle = entry[0]+(entry[1]-entry[0])/2
+          #  print entry[0] ,entry[1]
+            #middle = entry[0]+(entry[1]-1-entry[0])/2
+            #bug
+            middle = entry[0]+(entry[1]-1-1-entry[0])/2
             start = middle - args.distance
             end = middle + args.distance + 1
+         #   print start, end, middle
             if (start < 0 or end > bb.chroms(seq)):
                 logging.info('One entry out of boundaries, not take into account')
                 continue
@@ -116,8 +120,8 @@ if __name__ == '__main__':
 
             if not nb%buffSize:
                 logging.info("Computing frequencies, nb sequences: {}".format(nb))
-               
-#            if nb == 50000:
+
+#            if nb == 500000:
 #                break
 
     if nbEntries > 0:
@@ -152,18 +156,24 @@ if __name__ == '__main__':
         for i in range(-args.distance,args.distance+1):
             print "{}\t{}\t{}\t{}\t{}".format(i,lFreqATs[i+args.distance],lFreqGCs[i+args.distance],lFreqATNormalized[i+args.distance],lFreqGCNormalized[i+args.distance])
 
+
+    lGrid = []
+    for i in range(-args.distance+1,args.distance):
+        if not i % 10:
+            lGrid.append(i)
+
     if args.pFreq:
-        Graphics.plotDistribution(range(-args.distance+1,args.distance),lFreqATs[1:-1],out="{}_AT.png".format(args.prefix), title="Frequency of dinucleotides AA,AT,TA,TT", xax="position in bp", yax="frequency", legend=["AA/AT/TA/TT"])
-        Graphics.plotDistribution(range(-args.distance+1,args.distance),lFreqGCs[1:-1],out="{}_GC.png".format(args.prefix), title="Frequency of dinucleotides GG,GC,CG,CC", xax="position in bp", yax="frequency", color='green', legend=["GG/GC/CG/CC"])
+        Graphics.plotDistribution(range(-args.distance+1,args.distance),lFreqATs[1:-1],out="{}_AT.png".format(args.prefix), title="Frequency of dinucleotides AA,AT,TA,TT", xax="position in bp", yax="frequency", legend=["AA/AT/TA/TT"],grid=lGrid)
+        Graphics.plotDistribution(range(-args.distance+1,args.distance),lFreqGCs[1:-1],out="{}_GC.png".format(args.prefix), title="Frequency of dinucleotides GG,GC,CG,CC", xax="position in bp", yax="frequency", color='green', legend=["GG/GC/CG/CC"],grid=lGrid)
     if args.pFreqNorm:
-        Graphics.plotDistribution(range(-args.distance+1,args.distance),lFreqATNormalized[1:-1],out="{}_AT_Normalized.png".format(args.prefix),title="Normalized frequency of dinucleotides AA,AT,TA,TT", xax="position in bp", yax="Normalized frequency", legend=["AA/AT/TA/TT"])
-        Graphics.plotDistribution(range(-args.distance+1,args.distance),lFreqGCNormalized[1:-1],out="{}_GC_Normalized.png".format(args.prefix),title="Normalized frequency of dinucleotides GG,GC,CG,CC", xax="position in bp", yax="Normalized frequency", color='green', legend=["GG/GC/CG/CC"])
+        Graphics.plotDistribution(range(-args.distance+1,args.distance),lFreqATNormalized[1:-1],out="{}_AT_Normalized.png".format(args.prefix),title="Normalized frequency of dinucleotides AA,AT,TA,TT", xax="position in bp", yax="Normalized frequency", legend=["AA/AT/TA/TT"],grid=lGrid)
+        Graphics.plotDistribution(range(-args.distance+1,args.distance),lFreqGCNormalized[1:-1],out="{}_GC_Normalized.png".format(args.prefix),title="Normalized frequency of dinucleotides GG,GC,CG,CC", xax="position in bp", yax="Normalized frequency", color='green', legend=["GG/GC/CG/CC"],grid=lGrid)
     if args.pFreqNormMix:
-        Graphics.plotMultiDistribution(range(-args.distance+1,args.distance),[lFreqATNormalized[1:-1],lFreqGCNormalized[1:-1]],out="{}_ATGC_Normalized.png".format(args.prefix),title="Normalized frequency of dinucleotides", xax="position in bp", yax="Normalized frequency",legend=["AA/AT/TA/TT","GG/GC/CG/CC"],color=['blue','green'])
+        Graphics.plotMultiDistribution(range(-args.distance+1,args.distance),[lFreqATNormalized[1:-1],lFreqGCNormalized[1:-1]],out="{}_ATGC_Normalized.png".format(args.prefix),title="Normalized frequency of dinucleotides", xax="position in bp", yax="Normalized frequency",legend=["AA/AT/TA/TT","GG/GC/CG/CC"],color=['blue','green'], grid=lGrid)
     if args.pAutocor or args.pAutocorMix:
         lRhAT = autocorrelation(range(0,args.autocorMax-args.autocorMin),lFreqATs[args.autocorMin+args.distance:args.autocorMax+args.distance])
         lRhGC = autocorrelation(range(0,args.autocorMax-args.autocorMin),lFreqGCs[args.autocorMin+args.distance:args.autocorMax+args.distance])
-        if args.pAutocor: 
+        if args.pAutocor:
             Graphics.plotDistribution(range(args.autocorMin,args.autocorMax),lRhAT,out="{}_AT_Correlogram.png".format(args.prefix),title="autocorrelation of dinucleotides AA,AT,TA,TT", xax="position in bp", yax="Rh, autocorrelation coefficient", legend=["AA/AT/TA/TT"])
             Graphics.plotDistribution(range(args.autocorMin,args.autocorMax),lRhGC,out="{}_GC_Correlogram.png".format(args.prefix),title="autocorrelation of dinucleotides GG,GC,CG,CC", xax="position in bp", yax="Rh, autocorrelation coefficient", color='green', legend=["GG/GC/CG/CC"])
         if args.pAutocorMix:
