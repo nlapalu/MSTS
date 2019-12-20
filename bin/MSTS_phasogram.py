@@ -29,6 +29,7 @@ if __name__ == "__main__":
     parser.add_argument("-w", "--window", help="window size to compute phases", type=int, default=1200)
     parser.add_argument("--flush",help="print phases on stdout to save in file, > phases.out", action="store_true", default=False)
     parser.add_argument("--regression",help="detect peaks and perform a regression. Regression curve drawn on the graph", action="store_true", default=False)
+    parser.add_argument("--norm", help="normalize the signal with the mean coverage", action="store_true", default=False)
     parser.add_argument("-o", "--out", help="name of output graph", type=str, default="graph.png")
     parser.add_argument("-t", "--title", help="title text", type=str, default=None)
     parser.add_argument("-x", "--xax", help="x axis text", type=str, default="window, bp")
@@ -52,6 +53,8 @@ if __name__ == "__main__":
     lPhases = [0]*args.window
     buffSize = 1000000
     debug = 0
+    nb_windows = 0
+    allvalues = []
 
     logging.info('Buffer size: {} bases'.format(buffSize))
 
@@ -73,26 +76,33 @@ if __name__ == "__main__":
                     iStart = 0
                     iEnd = len(values)
                     for idx,val in enumerate(values):
-                        if math.isnan(val) and iStart != None:
+                        #if math.isnan(val) and iStart != None:
+                        if (math.isnan(val) or val==0) and iStart != None:
                             iEnd = idx
                             if len(values[iStart:iEnd]) > args.window:
                                 l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
+                                if args.norm:
+                                    nb_windows += len(values[iStart:iEnd]) - args.window + 1
+                                    allvalues.extend(values[iStart:iEnd])
                                 lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
                             iStart = None
-                        elif not math.isnan(val) and iStart == None:
+                        elif (not math.isnan(val) or val!=0) and iStart == None:
                             iStart = idx
                         else:
                             iEnd = idx
-                    if iStart != None: 
+                    if iStart != None:
                         if len(values[iStart:iEnd]) > args.window:
                             l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
+                            if args.norm:
+                                nb_windows += len(values[iStart:iEnd]) - args.window + 1
+                                allvalues.extend(values[iStart:iEnd])
                             lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
                     loop+=1
                     start = stop
         else:
             start = 0
             loop = 0
-            while (start < bw.chroms(chrom)): 
+            while (start < bw.chroms(chrom)):
                 stop = min(start+buffSize, bw.chroms(chrom))
                 logging.info('Requesting values: {}:{}-{}'.format(chrom,start,stop))
                 values = bw.values(chrom, start, stop)
@@ -104,23 +114,32 @@ if __name__ == "__main__":
                         iEnd = idx
                         if len(values[iStart:iEnd]) > args.window:
                             l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
+                            if args.norm:
+                                nb_windows += len(values[iStart:iEnd]) - args.window + 1
+                                allvalues.extend(values[iStart:iEnd])
                             lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
                         iStart = None
                     elif not math.isnan(val) and iStart == None:
                         iStart = idx
                     else:
                         iEnd = idx
-                if iStart != None: 
+                if iStart != None:
                     if len(values[iStart:iEnd]) > args.window:
                         l = CMSTS.phasogram(args.window,[float(i) for i in values[iStart:iEnd]])
+                        if args.norm:
+                            nb_windows += len(values[iStart:iEnd]) - args.window + 1
+                            allvalues.extend(values[iStart:iEnd])
                         lPhases = [a1 + b1 for a1, b1 in zip(l,lPhases)]
                 loop+=1
                 start = stop
 
+    if args.norm:
+        mean = sum(allvalues)/len(allvalues)
+        lPhases = [v/(nb_windows*mean) for v in lPhases]
 
     title = "phasogram of {}".format(args.bigWig)
     if args.title:
-        title = args.title        
+        title = args.title
 
     if args.regression:
         logging.info("Performing peak detection")
