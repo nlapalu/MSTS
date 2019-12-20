@@ -10,14 +10,14 @@ from MSTS.BamConverter import BamConverter
 
 class TestBamConverter(unittest.TestCase):
 
-    def setUp(self): 
+    def setUp(self):
 
         #self.maxDiff = None
-        self.BamFile =  "../test-data/input_min.bam"
-        self.BamFile2 =  "../test-data/input_micro.bam"
+        self.BamFile =  "test-data/input_min.bam"
+        self.BamFile2 =  "test-data/input_micro.bam"
 
     def tearDown(self):
-        pass 
+        pass
 
     def test_convertWithSingleMode(self):
         """Test convertWithSingleMode"""
@@ -43,7 +43,7 @@ class TestBamConverter(unittest.TestCase):
         bc = BamConverter(self.BamFile, mode="fragment")
         testCurrentSeq, dFragmentSize, lBedTracks  = bc.convertWithFragmentMode(seq, currentSeq)
         self.assertEquals(expCurrentSeq,testCurrentSeq[0:90])
-       
+
 
     def test_convertWithFragmentModeMiddle(self):
         """Test convertWithFragmentModeMiddle"""
