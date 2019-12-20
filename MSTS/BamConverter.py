@@ -278,7 +278,10 @@ class BamConverter(object):
                     
         #            nbmiddle = 0
                     for x in range(middle-window, middle+1+window):
-                        currentSeq[x] += 1 
+                        try:
+                            currentSeq[x] += 1 
+                        except:
+                            print x
         #                nbmiddle += 1
         #            print nbmiddle
                     lBedTracks.append((seq,middle - window , middle+1+ window))
@@ -368,7 +371,8 @@ class BamConverter(object):
         try:
             with open(self.prefix + ".bed", 'a') as f:
                 for fragment in lBedTracks:
-                    f.write("{}\t{}\t{}\n".format(fragment[0],fragment[1],fragment[2]+1))
+                    #f.write("{}\t{}\t{}\n".format(fragment[0],fragment[1],fragment[2]+1))
+                    f.write("{}\t{}\t{}\n".format(fragment[0],fragment[1],fragment[2]))
             f.close()
         except:
             logging.error("Can not write results in {}.bed".format(self.prefix))
