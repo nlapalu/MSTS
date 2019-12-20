@@ -5,14 +5,13 @@ from distutils.cmd import Command
 from distutils.core import setup, Extension
 from unittest import TextTestRunner, TestLoader, TestSuite
 
-#from tests.test_AlignDB import TestAlignDB
+from tests.test_BamConverter import TestBamConverter
+from tests.test_ExpNucFileParser import TestExpNucFileParser
+from tests.test_FeatureDB import TestFeatureDB
+from tests.test_GffGeneParser import TestGffGeneParser
+from tests.test_SimpleGffParser import TestSimpleGffParser
+from tests.test_TPMCounter import TestTPMCounter
 
-
-#try:
-#    from tests.test_BlastXMLParser import TestBlastXMLParser
-#    Biopython_available = True
-#except ImportError:
-#    Biopython_available = False
 
 class TestSuite(Command):
     user_options = []
@@ -25,12 +24,12 @@ class TestSuite(Command):
 
     def run(self):
 
-        logging.disable(logging.CRITICAL) 
+        logging.disable(logging.CRITICAL)
 
-        lTestCases = [TestAlignDB,]
+        lTestCases = [TestBamConverter,TestExpNucFileParser,
+                      TestFeatureDB,TestGffGeneParser, TestSimpleGffParser,
+                      TestTPMCounter,]
 
-#        if Biopython_available:
-#            lTestCases.append(TestBlastXMLParser)
         for case in lTestCases:
             suite = unittest.TestLoader().loadTestsFromTestCase(case)
             t = TextTestRunner(verbosity = 2)

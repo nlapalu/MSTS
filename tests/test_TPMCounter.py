@@ -9,8 +9,8 @@ from MSTS.TPMCounter import TPMCounter
 class TestTPMCounter(unittest.TestCase):
 
     def setUp(self):
-        self.inputBam =  "../test-data/input.bam"
-        self.inputGff = "../test-data/sample.gff3" 
+        self.inputBam =  "test-data/input.bam"
+        self.inputGff = "test-data/sample.gff3"
         self.iTPMCounter = TPMCounter(self.inputBam, self.inputGff)
 
     def tearDown(self):

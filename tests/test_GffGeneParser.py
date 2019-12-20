@@ -14,7 +14,7 @@ from MSTS.Entities.Exon import Exon
 class TestGffGeneParser(unittest.TestCase):
 
     def setUp(self):
-        self.parser = GffGeneParser('../test-data/sample.gff3', logLevel='DEBUG')
+        self.parser = GffGeneParser('test-data/sample.gff3', logLevel='DEBUG')
         self.maxDiff = None
 
     def tearDown(self):

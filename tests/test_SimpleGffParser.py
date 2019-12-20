@@ -9,7 +9,7 @@ from MSTS.Entities.Feature import Feature
 class TestSimpleGffParser(unittest.TestCase):
 
     def setUp(self):
-        self.parser = SimpleGffParser('../test-data/test.simple.gff3', logLevel='DEBUG')
+        self.parser = SimpleGffParser('test-data/test.simple.gff3', logLevel='DEBUG')
         self.maxDiff = None
 
     def tearDown(self):
