@@ -31,9 +31,9 @@ class ExpNucFileParser(object):
             elif re.match('^#', currentLine):
                 pass
             else:
-		m = re.search(r"^(.*)\t(.*)\t(.*)\t(.*)$", currentLine)
-		if m == None:
-			raise Exception("Error bad format for line:{} in {}".format(idx,self.inputFile))
+                m = re.search(r"^(.*)\t(.*)\t(.*)\t(.*)$", currentLine)
+                if m == None:
+                    raise Exception("Error bad format for line:{} in {}".format(idx,self.inputFile))
 
                 if m.group(1) not in self.dConditions:
                     self.dConditions[m.group(1)] = []
