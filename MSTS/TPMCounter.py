@@ -156,15 +156,15 @@ class TPMCounter(object):
 
         sumRatioCountEffectiveLength = sum ([ dNbFragPerTranscripts[t]/dEffectiveLenghtTranscripts[t] for t in dLengthTranscripts ])
         #print sumRatioCountEffectiveLength
-        print "ID\tlength\tEffectiveLength\tcounts\tTPM"
+        print("ID\tlength\tEffectiveLength\tcounts\tTPM")
         for t in dLengthTranscripts:
             TPM = (dNbFragPerTranscripts[t] / dEffectiveLenghtTranscripts[t])*(1/sumRatioCountEffectiveLength) * 1.e6 
-            print "{}\t{}\t{}\t{}\t{}".format(t,dLengthTranscripts[t],dEffectiveLenghtTranscripts[t],dNbFragPerTranscripts[t],TPM)
+            print("{}\t{}\t{}\t{}\t{}".format(t,dLengthTranscripts[t],dEffectiveLenghtTranscripts[t],dNbFragPerTranscripts[t],TPM))
         
 
     def readCountFile(self, countFile, dNbFragPerTanscript):
         """read count File"""
-        print dNbFragPerTanscript
+        print(dNbFragPerTanscript)
         try:
             with open(countFile, 'r') as f:
                 for line in f:
