@@ -34,8 +34,10 @@ class TestSuite(Command):
             suite = unittest.TestLoader().loadTestsFromTestCase(case)
             t = TextTestRunner(verbosity = 2)
             t.run(suite)
-
-execfile('MSTS/version.py')
+# python2.7
+#execfile('MSTS/version.py')
+# python 3
+exec(open("MSTS/version.py").read())
 
 module = Extension('CMSTS', sources = ["CMSTS.c"])
 
