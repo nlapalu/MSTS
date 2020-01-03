@@ -175,5 +175,5 @@ if __name__ == "__main__":
 
     if args.flush:
         for x in range(0,args.window):
-            print "{}\t{}".format(x,lPhases[x])
+            print("{}\t{}".format(x,lPhases[x]))
 
