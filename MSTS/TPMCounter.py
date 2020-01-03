@@ -5,8 +5,8 @@ import sys
 import argparse
 
 import pysam
-from Parser.GffGeneParser import GffGeneParser
-from BamMetrics import BamMetrics
+from MSTS.Parser.GffGeneParser import GffGeneParser
+from MSTS.BamMetrics import BamMetrics
 
 class TPMCounter(object):
 
