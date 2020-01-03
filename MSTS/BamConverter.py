@@ -281,7 +281,7 @@ class BamConverter(object):
                         try:
                             currentSeq[x] += 1 
                         except:
-                            print x
+                            print(x)
         #                nbmiddle += 1
         #            print nbmiddle
                     lBedTracks.append((seq,middle - window , middle+1+ window))
