@@ -121,7 +121,8 @@ static PyObject * dinucfrequency(PyObject *self, PyObject *args)
 
    for(j=0;j<nb;j++){
        
-      char *sequence = PyString_AsString(PyList_GetItem(sequences,j));
+      /*char *sequence = PyString_AsString(PyList_GetItem(sequences,j));*/
+      char *sequence = PyUnicode_AsUTF8(PyList_GetItem(sequences,j));
 
       int size = strlen(sequence);
       int middle = size/2;
