@@ -232,6 +232,7 @@ if __name__ == "__main__":
         printWigHeader()
 
     buffSize = 20000000
+#    buffSize = 200000
     logging.info('Buffer size: {} bases'.format(buffSize))
 
     bw = pyBigWig.open(args.bigWig)
@@ -240,9 +241,6 @@ if __name__ == "__main__":
     lAllProfilNorms = []
     lAllNucleosomes = []
     for chrom in bw.chroms():
-    #for chrom in ['lm_SuperContig_0_v2','lm_SuperContig_13_v2','lm_SuperContig_22_v2', 'lm_SuperContig_12_v2','lm_SuperContig_39_v2','lm_SuperContig_27_v2']:
-#    for chrom in ['lm_SuperContig_13_v2']:
-#    for chrom in ['BCIN01']:
         lNucleosomes = []
         lProfils = []
         lProfilNorms = []
@@ -257,13 +255,14 @@ if __name__ == "__main__":
                 #TODO bigbed 
         else:
             start = 0
+            nb_chunks = 0
             while (start < bw.chroms(chrom)): 
                 stop = min(start+buffSize, bw.chroms(chrom))
                 logging.info('Requesting values: {}:{}-{}'.format(chrom,start,stop))
                 values = bw.values(chrom, start, stop)
-                #iStart = start
-                #iEnd = stop
- 
+                print len(values)
+                print values[0]
+
                 #TODO Handle nan values
                 #for idx,val in enumerate(values):
                 #    if math.isnan(val):
@@ -277,8 +276,10 @@ if __name__ == "__main__":
                 for idx in lSortedIndices:
                     
                     if lSmoothedValues[idx] > 0 and values[idx] != 0:
-                        mean = np.mean([values[i] for i in range(max(idx-73+start,start),min(idx+73+1+start,stop))])
-                        stdev = np.std([values[i] for i in range(max(idx-73+start,start),min(idx+73+1+start,stop))])
+                        print max(idx-73+start,start)
+                        print min(idx+73+1+start,stop)
+                        mean = np.mean([values[i] for i in range(max(idx-73+start,start)-buffSize*nb_chunks,min(idx+73+1+start,stop)-buffSize*nb_chunks)])
+                        stdev = np.std([values[i] for i in range(max(idx-73+start,start)-buffSize*nb_chunks,min(idx+73+1+start,stop)-buffSize*nb_chunks)])
                         nuc = [chrom,max(idx-73+start,start),min(idx+73+1+start,stop), mean, stdev,values[idx],[]]
                         lNucleosomes.append(nuc)
                         lAllNucleosomes.append(nuc)
@@ -294,6 +295,7 @@ if __name__ == "__main__":
                             lSmoothedValues[i] = 0 
 
                 start = stop + 1
+                nb_chunks += 1
 
             logging.info("{} nucleosomes detected and positioned for {}".format(len(lNucleosomes),chrom))
 
@@ -347,6 +349,9 @@ if __name__ == "__main__":
     dClusters = Counter(lhClusters)
     nbClusters = sorted(dClusters.items(), key=lambda x:x[1], reverse=True)[0][0]
     logging.info("{} clusters defined after {} iterations".format(nbClusters,args.nbIterations))
+    if nbClusters > 25:
+        nbClusters = 25
+        logging.info("Too many clusters, number limited to {} clusters".format(nbClusters))
 
     # step 2: k-means clustering with pre-defined nb clusters
     logging.info("Performing K-Means clustering") 
@@ -406,7 +411,7 @@ if __name__ == "__main__":
     Graphics.plotDistributionWithLimits([i for i in range(1,148)],lStats,lKClassif,out="{}.clusters.png".format(args.prefix), title=args.title,xax=args.xax, yax=args.yax,legend=lKs)
 
 
-    if args.refine: 
+    if args.refine:
         lStatInit = []
         lKClassifInit = []
         lKInit = []
@@ -428,9 +433,12 @@ if __name__ == "__main__":
         NbClusInit = len(lKInit)
 
         for Kclass in ["fuzzy", "bad"]:
+            
             logging.info("refine {} nucleosomes: re-clustering".format(Kclass))
 
             lAllNucleosomesFuzzy = copy.deepcopy([nuc for nuc in lSortedAllkNucleosomes if nuc[8] == Kclass ])
+            if len(lAllNucleosomesFuzzy) == 0:
+                continue
             lnucFuzzy = [nuc[6] for nuc in lSortedAllkNucleosomes if nuc[8] == Kclass ] 
             print len(lAllNucleosomesFuzzy) 
 
@@ -454,6 +462,11 @@ if __name__ == "__main__":
             dClusters = Counter(lhClusters)
             nbClusters = sorted(dClusters.items(), key=lambda x:x[1], reverse=True)[0][0]
             logging.info("{} clusters defined after {} iterations".format(nbClusters,args.nbIterations))
+            if nbClusters > 25:
+                nbClusters = 25
+                logging.info("Too many clusters, number limited to {} clusters".format(nbClusters))
+
+
 
             # step 2: k-means clustering with pre-defined nb clusters
             logging.info("Performing K-Means clustering") 
@@ -473,8 +486,8 @@ if __name__ == "__main__":
                         # add cluster info
                         lAllNucleosomesFuzzy[j][7] = k + NbClusInit
                         lAllkNucleosomesFuzzy.append(lAllNucleosomesFuzzy[j])
-                        if lAllNucleosomesFuzzy[j][1] == 28174:
-                            print "ye"
+                        #if lAllNucleosomesFuzzy[j][1] == 28174:
+                        #    print "ye"
                         lKs[k] += 1
                     j+=1 
 
