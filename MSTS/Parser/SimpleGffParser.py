@@ -50,12 +50,12 @@ class SimpleGffParser(object):
             elif re.match('^#', currentLine):
                 pass
             else:
-		m = re.search(r"^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\d+)\s+(\d+)\s+(\S+)\s+([+-.])\s+(\S+)\s+(\S.*)$", currentLine)
-		if m == None:
-			raise Exception("Error GFF format line:{}".format(idx))
+                m = re.search(r"^\s*(\S+)\s+(\S+)\s+(\S+)\s+(\d+)\s+(\d+)\s+(\S+)\s+([+-.])\s+(\S+)\s+(\S.*)$", currentLine)
+                if m == None:
+                    raise Exception("Error GFF format line:{}".format(idx))
 
                 id = self._getFeatureTagValue('ID',m.group(9))
-	        dAttributes = self._stringToDict(m.group(9))
+                dAttributes = self._stringToDict(m.group(9))
                 score = None
                 try:
                     score = float(m.group(6))
