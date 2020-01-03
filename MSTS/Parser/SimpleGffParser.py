@@ -3,7 +3,7 @@
 import logging
 import re
 import sys
-from sets import Set
+#from sets import Set
 
 from MSTS.Entities.Feature import Feature
 
@@ -17,7 +17,7 @@ class SimpleGffParser(object):
         logging.basicConfig(level=self.logLevel) 
         
         self.nbFeatures = 0
-        self.sReferences = Set()
+        self.sReferences = set()
 
         try:
             self.filehandle = open(self.inputGffFile, 'r')
