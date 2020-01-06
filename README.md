@@ -39,6 +39,10 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BI
 
 ### Prerequesites:
 
+Python 3.X (tested with 3.7)
+
+Packages:
+
 * numpy
 * scipy
 * scikit-learn
@@ -47,7 +51,7 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BI
 * pysam
 * pyBigWig
 
-To install required package download the requirements and launch:
+To install required packages download the requirements and launch:
 
 `pip install -r requirements.txt`
 
