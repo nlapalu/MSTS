@@ -260,8 +260,8 @@ if __name__ == "__main__":
                 stop = min(start+buffSize, bw.chroms(chrom))
                 logging.info('Requesting values: {}:{}-{}'.format(chrom,start,stop))
                 values = bw.values(chrom, start, stop)
-                print len(values)
-                print values[0]
+                #print len(values)
+                #print values[0]
 
                 #TODO Handle nan values
                 #for idx,val in enumerate(values):
@@ -276,8 +276,8 @@ if __name__ == "__main__":
                 for idx in lSortedIndices:
                     
                     if lSmoothedValues[idx] > 0 and values[idx] != 0:
-                        print max(idx-73+start,start)
-                        print min(idx+73+1+start,stop)
+                        #print max(idx-73+start,start)
+                        #print min(idx+73+1+start,stop)
                         mean = np.mean([values[i] for i in range(max(idx-73+start,start)-buffSize*nb_chunks,min(idx+73+1+start,stop)-buffSize*nb_chunks)])
                         stdev = np.std([values[i] for i in range(max(idx-73+start,start)-buffSize*nb_chunks,min(idx+73+1+start,stop)-buffSize*nb_chunks)])
                         nuc = [chrom,max(idx-73+start,start),min(idx+73+1+start,stop), mean, stdev,values[idx],[]]
@@ -428,7 +428,7 @@ if __name__ == "__main__":
         lRefinedNuc = copy.deepcopy([ nuc for nuc in lSortedAllkNucleosomes if nuc[8] not in ["fuzzy", "bad"] ])
         for nuc in lRefinedNuc:
             nuc[7] = dReorder[nuc[7]] 
-        print len(lRefinedNuc)
+        #print len(lRefinedNuc)
 
         NbClusInit = len(lKInit)
 
@@ -440,7 +440,7 @@ if __name__ == "__main__":
             if len(lAllNucleosomesFuzzy) == 0:
                 continue
             lnucFuzzy = [nuc[6] for nuc in lSortedAllkNucleosomes if nuc[8] == Kclass ] 
-            print len(lAllNucleosomesFuzzy) 
+        #    print len(lAllNucleosomesFuzzy) 
 
             lhClusters = []
             logging.info("hierarchical clustering: {} iterations with {} nucleosomes".format(args.nbIterations, args.nbNucHC))
