@@ -320,4 +320,4 @@ if __name__ == "__main__":
 
     if args.flush:
         for x in range(0,winBefore+winAfter+1):
-            print "{}\t{}".format(x-winBefore,lAveragePhases[x])
+            print("{}\t{}".format(x-winBefore,lAveragePhases[x]))
