@@ -199,9 +199,23 @@ static PyMethodDef nucleosome_funcs[] = {
 };	
 
 
-
+/* deprecated Python2X
 PyMODINIT_FUNC initCMSTS(void)
 {
    Py_InitModule3("CMSTS", nucleosome_funcs, "CMSTS module"); 
 
+}*/
+
+static struct PyModuleDef CMSTS = 
+{
+    PyModuleDef_HEAD_INIT,
+    "CMSTS",
+    "usage: TODO",
+    -1,
+    nucleosome_funcs
+};
+
+PyMODINIT_FUNC PyInit_CMSTS(void)
+{
+    return PyModule_Create(&CMSTS);
 }
