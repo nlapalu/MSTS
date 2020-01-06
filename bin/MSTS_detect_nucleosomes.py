@@ -241,7 +241,7 @@ if __name__ == "__main__":
     lAllProfilNorms = []
     lAllNucleosomes = []
 #    for chrom in bw.chroms():
-    for chrom in bw.chroms("lm_SuperContig_0_v2"):
+    for chrom in ["lm_SuperContig_0_v2"]:
         lNucleosomes = []
         lProfils = []
         lProfilNorms = []
