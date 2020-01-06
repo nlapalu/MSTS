@@ -152,9 +152,9 @@ if __name__ == '__main__':
     logging.info('{} entries analyzed'.format(nb))
 
     if args.flush:
-        print "pos\tATfreq\tGCfreq\tATfreqNorm\tGCfreqNorm"
+        print("pos\tATfreq\tGCfreq\tATfreqNorm\tGCfreqNorm")
         for i in range(-args.distance,args.distance+1):
-            print "{}\t{}\t{}\t{}\t{}".format(i,lFreqATs[i+args.distance],lFreqGCs[i+args.distance],lFreqATNormalized[i+args.distance],lFreqGCNormalized[i+args.distance])
+            print("{}\t{}\t{}\t{}\t{}".format(i,lFreqATs[i+args.distance],lFreqGCs[i+args.distance],lFreqATNormalized[i+args.distance],lFreqGCNormalized[i+args.distance]))
 
 
     lGrid = []
