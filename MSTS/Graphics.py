@@ -305,7 +305,7 @@ class Graphics(object):
                 Ch += (lYs[j]-Ym)*(lYs[j+i]-Ym)
             Ch = Ch/N
             lRhs.append(Ch/C0)
-        print len(lRhs)
+        print(len(lRhs))
 
         fig = plt.Figure(figsize=(20,20))
         fig.suptitle(title, fontsize=32)
