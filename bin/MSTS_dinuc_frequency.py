@@ -107,6 +107,7 @@ if __name__ == '__main__':
                 logging.info('One entry out of boundaries, not take into account')
                 continue
             eSeq = sequences[seq][start:end]
+            print(seq, "\t", start, "\t", end)
             lEntriesToAnalyze.append(str(eSeq))
             nbEntries += 1
             nb +=1
