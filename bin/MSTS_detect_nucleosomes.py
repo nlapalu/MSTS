@@ -271,8 +271,16 @@ if __name__ == "__main__":
                 logging.info("Smoothing data with Gaussian blur, window: {}, stdev: {}".format(args.windowWidth, args.stdev))
                 lSmoothedValues = gaussianSmoothing(values, args.windowWidth, args.stdev)
                 lChrSmoothedValues.extend(lSmoothedValues)
-                print(lSmoothedValues)
-                lSortedIndices = sorted(range(len(lSmoothedValues)), key=lSmoothedValues.__getitem__, reverse=True)
+                
+                # Fix python 3 ; sort error with NoneType
+                #lSortedIndices = sorted(range(len(lSmoothedValues)), key=lSmoothedValues.__getitem__, reverse=True)
+                lModifiedValues = []
+                for v in lSmoothedValues :
+                    if v != None:
+                        lModifiedValues.append(v)
+                    else:
+                        lModifiedValues.append(-999)
+                lSortedIndices = sorted(range(len(lModifiedValues)), key=lModifiedValues.__getitem__, reverse=True)
 
                 for idx in lSortedIndices:
                     
