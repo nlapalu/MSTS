@@ -282,7 +282,7 @@ if __name__ == "__main__":
                         lModifiedValues.append(v)
                 #        print(v)
                     else:
-                        lModifiedValues.append(0.0)
+                        lModifiedValues.append(-999)
                 #print(lModifiedValues) 
                 lSortedIndices = sorted(range(len(lModifiedValues)), key=lModifiedValues.__getitem__, reverse=True)
 
@@ -290,6 +290,7 @@ if __name__ == "__main__":
                     
                    # Fix python 3 ; compare error with NoneType
                    # if lSmoothedValues[idx] > 0 and values[idx] != 0:
+                    
                     if lModifiedValues[idx] > 0 and values[idx] != 0:
                         #print max(idx-73+start,start)
                         #print min(idx+73+1+start,stop)
@@ -307,7 +308,9 @@ if __name__ == "__main__":
                         limit1 = max(idx-147+args.overlap,0)
                         limit2 = min(idx+147-args.overlap,len(lSmoothedValues))
                         for i in range(limit1,limit2):
+                            # Fix python3
                             lSmoothedValues[i] = 0 
+                            lModifiedValues[i] = 0 
 
                 start = stop + 1
                 nb_chunks += 1
