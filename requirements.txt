@@ -1,1 +1,8 @@
 pysam
+pyBigWig
+numpy
+scipy
+matplotlib
+fastcluster
+sklearn
+pyfaidx

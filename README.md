@@ -67,6 +67,13 @@ export PYTHONPATH=/home/nlapalu/test/MSTS/lib/python2.7/site-packages/
 export PATH=$PATH:/home/nlapalu/test/MSTS/bin
 ```
 
+```
+pip install -r requirements.txt
+pip install https://github.com/nlapalu/MSTS/archive/develop.zip
+```
+
+
+
 # Protocole to analyze MAINE-Seq data
 
 ## Introduction
