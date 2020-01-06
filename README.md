@@ -35,7 +35,7 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BI
 * wigToBigWig [Kent's tools](https://github.com/ENCODE-DCC/kentUtils)
 * bedToBigBed [Kent's tools](https://github.com/ENCODE-DCC/kentUtils)
 
-## Install  (DEV mode !!!)
+## Install
 
 ### Prerequesites:
 
@@ -47,40 +47,15 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BI
 * pysam
 * pyBigWig
 
-### Download
+To install required package download the requirements and launch:
 
-```
-wget https://github.com/nlapalu/MSTS/archive/develop.zip
-unzip develop.zip
-cd MSTS-develop/
-```
+`pip install -r requirements.txt`
 
-### Test the code
+### Install from github
 
-### Install as root
-
-### Install as user
-
-```
-python setup.py install --prefix=/home/nlapalu/test/MSTS
-export PYTHONPATH=/home/nlapalu/test/MSTS/lib/python2.7/site-packages/
-export PATH=$PATH:/home/nlapalu/test/MSTS/bin
-```
-
-```
-pip install -r requirements.txt
-pip install https://github.com/nlapalu/MSTS/archive/develop.zip
-```
-
-
+`pip install https://github.com/nlapalu/MSTS/archive/master.zip`
 
 # Protocole to analyze MAINE-Seq data
-
-## Introduction
-
-some comments on mapping step ...
-
-some comments on quality criteria and metrics / graph to control quality
 
 ## Mapping sequencing reads
 
@@ -188,9 +163,7 @@ For most of available tools, the nucleosome detection and positioning are based 
 - defining nucleosome positions from the highest occupancy value to the lowest with a constraint of 147bp.
 - limiting peak detection to a min/max coverage
 
-More sophiscated tool, defined TBB (ref), that allow several positions for the same nucleosome ... 
-
-In your case, we decided to keep the conventional protocole to define an average position, allowing a possible overlap between nucleosome in case of fuzzy area (30bp by default). Moreover, we perform a clustering and classification to propose confidence level in nucleosome positioning. We define 4 categories: "very-well", "well", "fuzzy" and "bad" positioned. 
+More sophiscated tool, defined TBB (*Zhou et al. 2016*), that allow several positions for the same nucleosome.  In your case, we decided to keep the conventional protocole to define an average position, allowing a possible overlap between nucleosome in case of fuzzy area (30bp by default). Moreover, we perform a clustering and classification to propose confidence level in nucleosome positioning. We define 4 categories: "very-well", "well", "fuzzy" and "bad" positioned. 
 
 `MSTS_detect_nucleosomes.py mapping.bw -p detection --bed --wig `
 
@@ -240,7 +213,7 @@ If you find few very-well, well positioned and a remarkably number of fuzzy, you
 
 ## Differential signal analysis
 
-We propose a simple approach to analyze differences between 2 conditions like described in .. et al,. We only analyze positions detected as potential dyad of nucleosomes, with a possible filter on the reliability of each type of nucleosome positioning (default=fuzzy). We use a Poisson distribution with a lambda equals to the normalized peak occupancy for each condition. Then we use a test ratio for two Poisson rates followed by a Benjamini-Hochberg correction for multiple tests. The default normalization method is quantile, but a global scaling (scaling factor defined with the average of number reads in all replicats) is also available.
+We propose a simple approach to analyze differences between 2 conditions. We only analyze positions detected as potential dyad of nucleosomes, with a possible filter on the reliability of each type of nucleosome positioning (default=fuzzy). We use a Poisson distribution with a lambda equals to the normalized peak occupancy for each condition. Then we use a test ratio for two Poisson rates followed by a Benjamini-Hochberg correction for multiple tests. The default normalization method is quantile, but a global scaling (scaling factor defined with the average of number reads in all replicats) is also available.
 In case of multiple replicates, we provide a dendogram of hierarchical clustering to control the homogeneity of replicates. In the same manner, the p-value plot allow you to validate the expected results.
 The user must provide a design file with link to all required files. 
 
@@ -291,7 +264,7 @@ _p-values plot_:
 
 ## Analyze di-nucleotide composition
 
-The di-nucleotide pattern AT/GC with a frequence of 10 bp for nucleosome fixation site has been largely described (ref) and proposed to be used as data quality control (*S.Hu et al. 2017*). You can perform a such analysis on your mapping data converted in bigBed file with MSTS_converter.py
+The di-nucleotide pattern AT/GC with a frequence of 10 bp for nucleosome fixation site has been largely described and proposed to be used as data quality control (*S.Hu et al. 2017*). You can perform a such analysis on your mapping data converted in bigBed file with MSTS_converter.py
 
 ### From mapped reads 
 
@@ -348,4 +321,5 @@ __*very-well positioned nucleosomes:*__
 # References
 
 * S. Hu, X. Chen, J. Liao, Y. Chen, C. Zhao, and Y. Zhang, “CAM: A quality control pipeline for MNase-seq data,” PLoS One, vol. 12, no. 8, p. e0182771, Aug. 2017.
+* X. Zhou, A. W. Blocker, E. M. Airoldi, and E. K. O’Shea, “A computational approach to map nucleosome positions and alternative chromatin states with base pair resolution.,” Elife, vol. 5, Sep. 2016.
 
