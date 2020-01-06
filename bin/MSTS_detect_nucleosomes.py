@@ -271,6 +271,7 @@ if __name__ == "__main__":
                 logging.info("Smoothing data with Gaussian blur, window: {}, stdev: {}".format(args.windowWidth, args.stdev))
                 lSmoothedValues = gaussianSmoothing(values, args.windowWidth, args.stdev)
                 lChrSmoothedValues.extend(lSmoothedValues)
+                print(lSmoothedValues)
                 lSortedIndices = sorted(range(len(lSmoothedValues)), key=lSmoothedValues.__getitem__, reverse=True)
 
                 for idx in lSortedIndices:
