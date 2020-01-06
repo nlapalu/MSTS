@@ -83,7 +83,7 @@ class MSTSIntegration(unittest.TestCase):
         p2 = subprocess.Popen(["awk", 'BEGIN{FS="\t"}{if($5 > 50){print $1;}}'], stdin=p1.stdout, stdout=subprocess.PIPE)
         p1.stdout.close()
         output = p2.communicate()[0]
-        stdout.write(repr(output)[2:-1])
+        stdout.write(output.decode())
         stdout.close()
         self.assertTrue(os.path.isfile("50.tpm"))
 
@@ -92,7 +92,7 @@ class MSTSIntegration(unittest.TestCase):
         p2 = subprocess.Popen(["awk", 'BEGIN{FS="\t"}{if($5 <= 50 && $5 > 5){print $1}}'], stdin=p1.stdout, stdout=subprocess.PIPE)
         p1.stdout.close()
         output = p2.communicate()[0]
-        stdout.write(repr(output)[2:-1])
+        stdout.write(output.decode())
         stdout.close()
         self.assertTrue(os.path.isfile("50-5.tpm"))
 
@@ -101,7 +101,7 @@ class MSTSIntegration(unittest.TestCase):
         p2 = subprocess.Popen(["awk", 'BEGIN{FS="\t"}{if($5 <= 5 && $5 > 1){print $1}}'], stdin=p1.stdout, stdout=subprocess.PIPE)
         p1.stdout.close()
         output = p2.communicate()[0]
-        stdout.write(repr(output)[2:-1])
+        stdout.write(output.decode())
         stdout.close()
         self.assertTrue(os.path.isfile("5-1.tpm"))
 
@@ -110,7 +110,7 @@ class MSTSIntegration(unittest.TestCase):
         p2 = subprocess.Popen(["awk", 'BEGIN{FS="\t"}{if($5 < 1){print $1}}'], stdin=p1.stdout, stdout=subprocess.PIPE)
         p1.stdout.close()
         output = p2.communicate()[0]
-        stdout.write(repr(output)[2:-1])
+        stdout.write(output.decode())
         stdout.close()
         self.assertTrue(os.path.isfile("1.tpm"))
 
