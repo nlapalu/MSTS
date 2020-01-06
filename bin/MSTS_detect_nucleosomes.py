@@ -280,8 +280,10 @@ if __name__ == "__main__":
                 for v in lSmoothedValues :
                     if v != None:
                         lModifiedValues.append(v)
+                        print(v)
                     else:
                         lModifiedValues.append(-999)
+                        print(-999)
                 print(lModifiedValues) 
                 lSortedIndices = sorted(range(len(lModifiedValues)), key=lModifiedValues.__getitem__, reverse=True)
 
