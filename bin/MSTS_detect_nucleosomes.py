@@ -284,7 +284,9 @@ if __name__ == "__main__":
 
                 for idx in lSortedIndices:
                     
-                    if lSmoothedValues[idx] > 0 and values[idx] != 0:
+                   # Fix python 3 ; compare error with NoneType
+                   # if lSmoothedValues[idx] > 0 and values[idx] != 0:
+                    if lModifiedValues[idx] > 0 and values[idx] != 0:
                         #print max(idx-73+start,start)
                         #print min(idx+73+1+start,stop)
                         mean = np.mean([values[i] for i in range(max(idx-73+start,start)-buffSize*nb_chunks,min(idx+73+1+start,stop)-buffSize*nb_chunks)])
