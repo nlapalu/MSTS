@@ -26,8 +26,8 @@ with open(sys.argv[1]) as f:
         llYs.append(lYs)
         if llXs:
             if llXs != lXs:
-                print "Error indice list"
-                sys.exit(1) 
+                print("Error indice list")
+                sys.exit(1)
         else:
             llXs = lXs
 
@@ -36,7 +36,7 @@ fig = plt.Figure(figsize=(20,20))
 fig.suptitle("merged phasogram", fontsize=32)
 ax = fig.add_subplot(111)
 for i,val in enumerate(llYs):
-    print val
+    print(val)
     ax.plot(lXs,val,color=color[i])
 axis_font = {'size':'28'}
 ax.set_xlabel("window, bp", **axis_font)
