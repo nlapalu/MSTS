@@ -240,7 +240,8 @@ if __name__ == "__main__":
     lAllProfils = []
     lAllProfilNorms = []
     lAllNucleosomes = []
-    for chrom in bw.chroms():
+#    for chrom in bw.chroms():
+    for chrom in bw.chroms("lm_SuperContig_0_v2"):
         lNucleosomes = []
         lProfils = []
         lProfilNorms = []
@@ -256,7 +257,7 @@ if __name__ == "__main__":
         else:
             start = 0
             nb_chunks = 0
-            while (start < bw.chroms(chrom)): 
+            while (start < bw.chroms(chrom)):
                 stop = min(start+buffSize, bw.chroms(chrom))
                 logging.info('Requesting values: {}:{}-{}'.format(chrom,start,stop))
                 values = bw.values(chrom, start, stop)
