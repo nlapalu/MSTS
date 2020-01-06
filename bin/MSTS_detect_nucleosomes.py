@@ -281,6 +281,7 @@ if __name__ == "__main__":
                         lModifiedValues.append(v)
                     else:
                         lModifiedValues.append(-999)
+                print(lModifiedValues) 
                 lSortedIndices = sorted(range(len(lModifiedValues)), key=lModifiedValues.__getitem__, reverse=True)
 
                 for idx in lSortedIndices:
