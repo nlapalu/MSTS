@@ -242,6 +242,7 @@ if __name__ == "__main__":
     lAllNucleosomes = []
 #    for chrom in bw.chroms():
     for chrom in ["lm_SuperContig_0_v2"]:
+        print('ICI')
         lNucleosomes = []
         lProfils = []
         lProfilNorms = []
