@@ -3,7 +3,7 @@
 import logging
 import sys
 import argparse
-
+import math
 import numpy as np
 import CMSTS
 
@@ -99,15 +99,13 @@ if __name__ == '__main__':
           #  print entry[0] ,entry[1]
             #middle = entry[0]+(entry[1]-1-entry[0])/2
             #bug
-            middle = entry[0]+(entry[1]-1-1-entry[0])/2
+            middle = entry[0]+math.floor((entry[1]-entry[0])/2)
             start = middle - args.distance
             end = middle + args.distance + 1
          #   print start, end, middle
             if (start < 0 or end > bb.chroms(seq)):
                 logging.info('One entry out of boundaries, not take into account')
                 continue
-            print(seq, "\t", start, "\t", end)
-            print("YOYO")
             eSeq = sequences[seq][start:end]
             lEntriesToAnalyze.append(str(eSeq))
             nbEntries += 1
