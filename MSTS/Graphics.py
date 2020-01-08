@@ -63,13 +63,13 @@ class Graphics(object):
 
 
     @staticmethod
-    def plotDistributionWithRegressionDinuc(lXs, lYs, rXs, rYs, slope, intercept, R2, pval, meanPhase, stdvPhase,out="", title="", xax="", yax=""):
+    def plotDistributionWithRegressionDinuc(lXs, lYs, rXs, rYs, slope, intercept, R2, pval, meanPhase, stdvPhase,out="", title="", xax="", yax="", color='blue'):
         """Draw a simple Distribution and add a regression subgraph"""
 
         fig = plt.Figure(figsize=(20,20))
         fig.suptitle(title, fontsize=32)
         ax = fig.add_subplot(111)
-        ax.plot(lXs,lYs)
+        ax.plot(lXs,lYs, color=color)
         annotation_font = {'size':16}
         for i in rYs:
          #   ax.annotate(str(i),xy=(i-10,lYs[i]+10), **annotation_font)

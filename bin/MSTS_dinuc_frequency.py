@@ -100,7 +100,7 @@ if __name__ == '__main__':
             continue
         lEntries = bb.entries(seq, 0, bb.chroms(seq))
         for entry in lEntries:
-  #      for entry in lEntries[0:200000]:
+    #    for entry in lEntries[0:100000]:
           #  print entry[0] ,entry[1]
             #middle = entry[0]+(entry[1]-1-entry[0])/2
             #bug
@@ -182,6 +182,7 @@ if __name__ == '__main__':
         if args.pAutocor:
             Graphics.plotDistribution(range(args.autocorMin,args.autocorMax),lRhAT,out="{}_AT_Correlogram.png".format(args.prefix),title="autocorrelation of dinucleotides AA,AT,TA,TT", xax="position in bp", yax="Rh, autocorrelation coefficient", legend=["AA/AT/TA/TT"])
             Graphics.plotDistribution(range(args.autocorMin,args.autocorMax),lRhGC,out="{}_GC_Correlogram.png".format(args.prefix),title="autocorrelation of dinucleotides GG,GC,CG,CC", xax="position in bp", yax="Rh, autocorrelation coefficient", color='green', legend=["GG/GC/CG/CC"])
+
         if args.pAutocor and args.regression:
 
             logging.info("Performing peak detection")
@@ -218,7 +219,7 @@ if __name__ == '__main__':
                 logging.info("R2: {}".format(r_value))
                 logging.info("p-value: {}".format(p_value))
 
-            Graphics.plotDistributionWithRegressionDinuc(range(args.autocorMin,args.autocorMax),lRhGC,out="{}_GC_Correlogram.png".format(args.prefix),title="autocorrelation of dinucleotides GG,GC,CG,CC", xax="position in bp", yax="Rh, autocorrelation coefficient", color='green')
+            Graphics.plotDistributionWithRegressionDinuc(range(args.autocorMin,args.autocorMax),lRhGC,[x for x,y in enumerate(lPeaks)],lPeaks,slope, intercept,r_value,p_value,meanlPhasePeriods,stdlPhasePeriods,out="{}_GC_Correlogram.png".format(args.prefix),title="autocorrelation of dinucleotides GG,GC,CG,CC", xax="position in bp", yax="Rh, autocorrelation coefficient", color='green')
 
         if args.pAutocorMix:
             Graphics.plotMultiDistribution(range(args.autocorMin,args.autocorMax),[lRhAT,lRhGC],out="{}_ATGC_Correlogram.png".format(args.prefix),title="autocorrelation of dinucleotides", xax="position in bp", yax="Rh, autocorrelation coefficient",legend=["AA/AT/TA/TT","GG/GC/CG/CC"],color=['blue','green'])
