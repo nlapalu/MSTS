@@ -5,6 +5,7 @@ import sys
 import argparse
 import math
 import numpy as np
+from scipy import stats
 import CMSTS
 
 from pyfaidx import Fasta
@@ -12,6 +13,8 @@ import pyBigWig
 
 from MSTS.version import __version__
 from MSTS.Graphics import Graphics
+
+from extlib.detect_peaks import detect_peaks
 
 def autocorrelation(lXs,lYs):
     lRhs = []
@@ -57,6 +60,7 @@ if __name__ == '__main__':
     parser.add_argument("--pAutocorMix",help="print AT and GC autocorrelations on a single correlogram", action="store_true", default=False)
     parser.add_argument("-ami","--autocorMin", help="start for autocorrelation analysis, default=[5]", type=int, default=5)
     parser.add_argument("-amx","--autocorMax", help="stop for autocorrelation analysis, default=[35]", type=int, default=35)
+    parser.add_argument("--regression",help="detect peaks and perform a regression on autocorrelation curves. Regression curve drawn on the graph", action="store_true", default=False)
     parser.add_argument("-b","--buffer", help="size of chunk (nb sequences) to keep in memory before analysis", type=int, default=1000000)
     parser.add_argument("-v", "--verbosity", type=int, choices=[1,2,3],
                         help="increase output verbosity 1=error, 2=info, 3=debug")
@@ -96,6 +100,7 @@ if __name__ == '__main__':
             continue
         lEntries = bb.entries(seq, 0, bb.chroms(seq))
         for entry in lEntries:
+  #      for entry in lEntries[0:200000]:
           #  print entry[0] ,entry[1]
             #middle = entry[0]+(entry[1]-1-entry[0])/2
             #bug
@@ -173,8 +178,47 @@ if __name__ == '__main__':
     if args.pAutocor or args.pAutocorMix:
         lRhAT = autocorrelation(range(0,args.autocorMax-args.autocorMin),lFreqATs[args.autocorMin+args.distance:args.autocorMax+args.distance])
         lRhGC = autocorrelation(range(0,args.autocorMax-args.autocorMin),lFreqGCs[args.autocorMin+args.distance:args.autocorMax+args.distance])
+
         if args.pAutocor:
             Graphics.plotDistribution(range(args.autocorMin,args.autocorMax),lRhAT,out="{}_AT_Correlogram.png".format(args.prefix),title="autocorrelation of dinucleotides AA,AT,TA,TT", xax="position in bp", yax="Rh, autocorrelation coefficient", legend=["AA/AT/TA/TT"])
             Graphics.plotDistribution(range(args.autocorMin,args.autocorMax),lRhGC,out="{}_GC_Correlogram.png".format(args.prefix),title="autocorrelation of dinucleotides GG,GC,CG,CC", xax="position in bp", yax="Rh, autocorrelation coefficient", color='green', legend=["GG/GC/CG/CC"])
+        if args.pAutocor and args.regression:
+
+            logging.info("Performing peak detection")
+            # detect all peaks and plot data
+            lPeaks = detect_peaks(lRhAT, mpd=4)
+            if (len(lPeaks) > 1):
+                logging.info("Multi peaks detected - performing regression on AT")
+                slope, intercept, r_value, p_value, std_err = stats.linregress([x for x,y in enumerate(lPeaks)],lPeaks)
+
+                lPhasePeriods = []
+                for i in range(1,len(lPeaks)):
+                    lPhasePeriods.append(lPeaks[i]-lPeaks[i-1])
+                    meanlPhasePeriods = np.mean(lPhasePeriods)
+                    stdlPhasePeriods = np.std(lPhasePeriods)
+
+                logging.info("Equation: x*{} + {}".format(slope,intercept))
+                logging.info("R2: {}".format(r_value))
+                logging.info("p-value: {}".format(p_value))
+
+            Graphics.plotDistributionWithRegressionDinuc(range(args.autocorMin,args.autocorMax),lRhAT,[x for x,y in enumerate(lPeaks)],lPeaks,slope, intercept,r_value,p_value,meanlPhasePeriods,stdlPhasePeriods,out="{}_AT_Correlogram.png".format(args.prefix),title="autocorrelation of dinucleotides AA,AT,TA,TT", xax="position in bp", yax="Rh, autocorrelation coefficient")
+
+            lPeaks = detect_peaks(lRhGC, mpd=4)
+            if (len(lPeaks) > 1):
+                logging.info("Multi peaks detected - performing regression on AT")
+                slope, intercept, r_value, p_value, std_err = stats.linregress([x for x,y in enumerate(lPeaks)],lPeaks)
+
+                lPhasePeriods = []
+                for i in range(1,len(lPeaks)):
+                    lPhasePeriods.append(lPeaks[i]-lPeaks[i-1])
+                    meanlPhasePeriods = np.mean(lPhasePeriods)
+                    stdlPhasePeriods = np.std(lPhasePeriods)
+
+                logging.info("Equation: x*{} + {}".format(slope,intercept))
+                logging.info("R2: {}".format(r_value))
+                logging.info("p-value: {}".format(p_value))
+
+            Graphics.plotDistributionWithRegressionDinuc(range(args.autocorMin,args.autocorMax),lRhGC,out="{}_GC_Correlogram.png".format(args.prefix),title="autocorrelation of dinucleotides GG,GC,CG,CC", xax="position in bp", yax="Rh, autocorrelation coefficient", color='green')
+
         if args.pAutocorMix:
             Graphics.plotMultiDistribution(range(args.autocorMin,args.autocorMax),[lRhAT,lRhGC],out="{}_ATGC_Correlogram.png".format(args.prefix),title="autocorrelation of dinucleotides", xax="position in bp", yax="Rh, autocorrelation coefficient",legend=["AA/AT/TA/TT","GG/GC/CG/CC"],color=['blue','green'])
