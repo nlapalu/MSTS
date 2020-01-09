@@ -27,7 +27,7 @@ class MSTSIntegration(unittest.TestCase):
         '''run MSTS_converter.py'''
 
         f = 'MSTS_converter.py'
-        args = ['{}/mapping.bam'.format(self.data_path),"--bed", "--size", "--wig", "-m", "fragment-middle", "-p", "TEST" ]
+        args = ['{}/mapping.bam'.format(self.data_path),"--bed", "--size", "--wig", "-m", "fragment-middle", "-w", "20","-p", "TEST" ]
         cmd = ['python', '{}/{}'.format(self.project_path,f)]
         cmd.extend(args)
         subprocess.call(cmd)
@@ -58,7 +58,7 @@ class MSTSIntegration(unittest.TestCase):
         '''run MSTS_feature_phasogram'''
 
         f = 'MSTS_feature_phasogram.py'
-        args = ['TEST.bw', '{}/annotations.gff3'.format(self.data_path), '-o', 'TEST_FEAT_PHASO.png', '--context', '--GaussianSmoothing']
+        args = ['TEST.bw', '{}/annotations.gff3'.format(self.data_path), '-o', 'TEST_FEAT_PHASO.png', '--context','--norm', '--GaussianSmoothing','-v','2']
         cmd = ['python', '{}/{}'.format(self.project_path,f)]
         cmd.extend(args)
         subprocess.call(cmd)

@@ -112,6 +112,22 @@ def readFeatureIds(lIdsFile):
 
     return lIds
 
+
+def getMeanValue(bw):
+    """Normalize with mean"""
+    lValues =  []
+
+    for chrom in db.selectReferences():
+        logging.info('Requesting genes in sequence: {}'.format(chrom))
+        lFeatures = db.selectFeatureTypeFromReference(chrom, featType)
+        for feat in lFeatures:
+            values = bw.values(chrom,feat.start,feat.end)
+            lValues.extend(values)
+
+    return np.mean(lValues)
+
+
+
 if __name__ == "__main__":
 
     program = sys.argv[0]
@@ -141,6 +157,7 @@ if __name__ == "__main__":
     parser.add_argument("-s","--GaussianSmoothing", help="Perform Gaussian Smoothing on data, ", action="store_true", default=False)
     parser.add_argument("-w","--windowWidth", help="window size for Gaussian smoothing, default=3", type=int, default=3)
     parser.add_argument("-sd","--stdev", help="stdev for Gaussian smoothing, default=20", type=int, default=20)
+    parser.add_argument("--norm", help="Normalize signal value with the average signal of all features of the same type", action="store_true", default=False)
     parser.add_argument("--flush",help="print phases on stdout to save in file, > phases.out", action="store_true", default=False)
     parser.add_argument("-l","--lIds", help="txt file with ID list (one ID per line), limit phasogram to the features specified in the file. Features must be of the same type as featureType", type=str, default=None)
     parser.add_argument("-v", "--verbosity", type=int, choices=[1,2,3],
@@ -223,14 +240,14 @@ if __name__ == "__main__":
             startNew = start
             endNew = end
 
-            if pivot == 'start':          
+            if pivot == 'start':
                 lOverlappingFeatures = db.selectFeatureTypeFromCoordinates(featTypeContext,chrom,min(start,end),max(start, end))
                 if context:
-                    startNew = getCoordinatesFreeFromOtherGenes(lOverlappingFeatures,feat,start) 
+                    startNew = getCoordinatesFreeFromOtherGenes(lOverlappingFeatures,feat,start)
             elif pivot == 'end':
                 lOverlappingFeatures = db.selectFeatureTypeFromCoordinates(featTypeContext,chrom,min(start,end),max(start, end))
                 if context:
-                    endNew = getCoordinatesFreeFromOtherGenes(lOverlappingFeatures,feat,end,pivot='end') 
+                    endNew = getCoordinatesFreeFromOtherGenes(lOverlappingFeatures,feat,end,pivot='end')
 
             index = 0
             lOtherGenesBases = []
@@ -283,19 +300,26 @@ if __name__ == "__main__":
                         lPhasesNb[-i-1] += 1
                         index = i
                     lOtherGenesBases = getBasesOverlappingOtherGenes(lOverlappingFeatures,feat.start,feat.end,end,start)[::-1]
-                
+
             else:
                 pass
 
             for i in range(0,len(lOtherGenesBases)):
                 lOtherGenesNb[i] += lOtherGenesBases[i]
 
-
+    #        print(lPhases)
     lAveragePhases = [0]*(1+winBefore+winAfter)
-
+    #print(lPhases)
+    #print(lPhasesNb)
     for a,b in enumerate(lPhases):
         if lPhasesNb[a] != 0:
             lAveragePhases[a] = lPhases[a]/lPhasesNb[a]
+
+    if args.norm:
+        mean = getMeanValue(bw)
+        lAveragePhases = [v/mean for v in lAveragePhases]
+        logging.info("Normalizing values with average coverage of {}: {}".format(args.featureType,mean))
+
 
 
     if args.GaussianSmoothing:
