@@ -12,7 +12,6 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRAE-B
 	* [Dependencies and external tools](#dependencies-and-external-tools)
 * [Tool documentation](#tool-documentation)
 * [Protocol to analyze MAINE-Seq data](#protocol-to-analyze-maine-seq-data)
-	* [Introduction](#introduction)
 	* [Process mapped sequencing reads](#process-mapped-sequencing-reads)
 	* [Draw phasogram and get nucleosome spacing](#draw-phasogram-and-get-nucleosome-spacing)
 		* [Genome-wide analysis](#genome-wide-analysis)
