@@ -16,7 +16,7 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRAE-B
 	* [Draw phasogram and get nucleosome spacing](#draw-phasogram-and-get-nucleosome-spacing)
 		* [Genome-wide analysis](#genome-wide-analysis)
 		* [Compartment-specific analysis](#compartment-specific-analysis)
-	* [Draw feature-specific phasogram](#draw-feature-specific-phasogram)
+	* [Draw feature-specific phasograms](#draw-feature-specific-phasograms)
 	* [Explore relationship between Transcript Expression level and nucleosome occupancy](#explore-relationship-between-transcript-expression-level-and-nucleosome-occupancy)
 	* [Detect and categorize nucleosomes](#detect-and-categorize-nucleosomes)
 	* [Differential signal analysis](#differential-signal-analysis)
