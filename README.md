@@ -1,23 +1,23 @@
 # MSTS: MAINE-Seq Tool Suite
 
-MSTS has been developed to analyse NGS data in the frame of MAINE-Seq experiments and to propose some utilities to draw graph and perform simple statistics on your data.
+MSTS has been developed to analyze NGS data obtained from MAINE-Seq experiments and provide utilities to perform simple statistics and to plot results.
 
-MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BIOGER](http://www.versailles-grignon.inra.fr/bioger). Please do not hesitate to contact us (nicolas.lapalu at inra dot fr) if you have any comments or questions.
+MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRAE-BIOGER](http://www.versailles-grignon.inra.fr/bioger). Please do not hesitate to contact us (nicolas.lapalu at inrae dot fr) if you have any comments or questions.
 
 # Table of contents
 
 * [Requirements](#requirements)
 * [Installation](#installation)
-* [Tool documentations](#tool-documentations)
-* [Protocole to analyze MAINE-Seq data](#protocole-to-analyze-maine-seq-data)
+* [Tool documentation](#tool-documentation)
+* [Protocol to analyze MAINE-Seq data](#protocol-to-analyze-maine-seq-data)
 	* [Introduction](#introduction)
-	* [Mapping sequencing reads](#mapping-sequencing-reads)
+	* [Process mapped sequencing reads](#process-mapped-sequencing-reads)
 	* [Draw phasogram and get nucleosome spacing](#draw-phasogram-and-get-nucleosome-spacing)
-		* [Analysis at the genome scale](#analysis-at-the-genome-scale)
-		* [Analysis of feature specificity](#analysis-of-feature-specificity)
-	* [Draw feature specific phasogram](#draw-feature-specific-phasogram)
-	* [Analyze relation between Transcript Expression level and nucleosome occupancy](#analyze-relation-between-transcript-expression-level-and-nucleosome-occupancy)
-	* [Detect and classify nucleosomes](#detect-and-classify-nucleosomes)
+		* [Genome-wide analysis](#genome-wide-analysis)
+		* [Compartment-specific analysis](#compartment-specific analysis)
+	* [Draw feature-specific phasogram](#draw-feature-specific-phasogram)
+	* [Explore relationship between Transcript Expression level and nucleosome occupancy](#explore-relationship-between-transcript-expression-level-and-nucleosome-occupancy)
+	* [Detect and categorize nucleosomes](#detect-and-categorize-nucleosomes)
 	* [Differential signal analysis](#differential-signal-analysis)
 	* [Analyze di-nucleotide composition](#analyze-di-nucleotide-composition)
 		* [From mapped reads](#from-mapped-reads) 
@@ -37,7 +37,7 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRA-BI
 
 ## Install
 
-### Prerequesites:
+### Prerequisites:
 
 Python 3.X (tested with 3.7)
 
@@ -59,17 +59,17 @@ To install required packages download the requirements and launch:
 
 `pip install https://github.com/nlapalu/MSTS/archive/master.zip`
 
-# Protocole to analyze MAINE-Seq data
+# Protocol to analyze MAINE-Seq data
 
-## Mapping sequencing reads
+## Process mapped sequencing reads
 
-Be sure your mapping file is sorted and indexing, if not:
+The tool of your choice can be used to map sequencing reads as long as the output is in bam format. Make sure your mapping file is sorted by position and indexed before using MSTS. To sort and index bam files run: 
 
 `samtools sort mapping.bam > mapping.sorted.bam`
 
 `samtools index mapping.sorted.bam `
 
-then:
+Then use the MSTS converter to process bam files:
 
 ### For single reads
 
@@ -85,27 +85,31 @@ then:
 
 ## Draw phasogram and get nucleosome spacing 
 
-### Analysis at the genome scale
+### Genome-wide analysis
 
-One of the first common thing to do after the mapping is the phasogram of your data. This graph highlights the nucleosome arrangement on the genome and the average spacing between two nucleosomes. 
+One of the first things to do for primary data exploration is to plot a phasogram  derived from your data. This graph highlights general nucleosome arrangement on the genome and the average spacing between two nucleosomes. 
 
 `MSTS_phasogram.py mapping.bw -w 1000 -o mapping.phasogram.png -t "phasogram - mapping" -v 2 --flush --regression > mapping.phaso`
 
 <div align="center"><img src="doc/images/phasogram.genome.png" width=650></div>
 
-As we can see, the distance between two nucleosome summits is estimated close to 164bp with a standard deviation of 2,3bp. So, with a size of 147bp for a nucleosome fixation, we can propose an average spacing of 18 nucleotides between nucleosomes. We recommend not to exceed 1kb as analyzed window. Beyond this value, the signal becomes less reliable.
+In this example, the phasogram reveals an average distance between two nucleosome summits of nearly 164 bp, with a standard deviation of 2.3 bp. Thus, considering a size of 147 bp for the length of nucleosome-bound DNA, an average spacing of 18 nucleotides between nucleosomes can be proposed. We recommend window of 1kb as one-fits starting point. Beyond this value, the signal could become less reliable with some datasets.
 
-### Analysis of feature specificity
 
-In case of genome specificity (high AT content, AT isochore, different chromosome composition, ...), you can limit the phasogram to specific regions. Below we limited the analysis to genes. We can observe that the standard deviation is reduced, the spacing between nucleosome is less variable compare to the entire genome.
+### Compartment-specific analysis
 
-`MSTS_phasogram.py /work/spe_nucleosome/Lepto/MAINE-Seq/publi/converter/Lmb/mapping_40.bw -w 1000 -o mapping.phasogram.png -t "phasogram - mapping" -v 2 --flush --regression -b genes.bb > mapping.phaso`
+In case of needing to restrict the analysis to particular genome compartments, *e.g.*, with specific characteristics such as high AT content or exon only, you can limit the phasogram analysis to chosen regions. An example of analysis restricted to genes is provided below. We can observe that standard deviation is reduced, indicating spacing between nucleosome is less variable within genes than when the entire genome is considered.
+
+
+`MSTS_phasogram.py mapping.bw -w 1000 -o mapping.phasogram.png -t "phasogram - mapping" -v 2 --flush --regression -b genes.bb > mapping.phaso`
 
 <div align="center"><img src="doc/images/phasogram.genes.png" width=650></div>
 
-## Draw feature specific phasograms
+## Draw feature-specific phasograms
 
 We also propose a "phasogram like" graph, that show the cumulative signal on specific features. The "context" option limits the graph to the desired bases, no spanning feature or base outside of the feature. For example, if you wish to analyze 1kb before and after the Transcription Start Sites (TSS), but some adjacent TSS are closer than 1kb, we remove bases spanning the new TSS to avoid bias. The number of bases taken into account to draw the signal are plotted as an histogram on the graph. We provide another histogram in the upper area with adjacent features of the same type. This option is usefull for small genomes with short intergenic regions. 
+
+We also propose to plot "phasogram-like" graphs that show cumulative signal on specific features. The "context" option limits the data to be considered for plotting to the nucleotides concerned by the feature option without hitting any nearby feature. For example, if you wish to analyze 1 kb upstream and 1 kb downstream Transcription Start Sites (TSS), the "context" option will perform the analysis using up to 1 kb on each side, cutting out any eventual adjacent mRNA found closer than 1kb to avoid bias. The number of nucleotides actually taken into account to draw the signal is then plotted as a histogram (grey area) on the graph. Another histogram is also provided in the upper area representing the number of adjacent features of the same type at each position of the studied window. This option is particularly useful for small genomes with short intergenic regions. The context ifilter works on any type of feature defined with the "featureType" option.
 
 __*Analysis of TSS:*__
 
@@ -119,15 +123,15 @@ __*Analysis of TTS:*__
 
 You can perform the same analysis on all the feature types available in your gff file.
 
-## Analyze relation between Transcript Expression level and nucleosome occupancy
+## Explore relationship between Transcript Expression level and nucleosome occupancy
 
-If you have RNA-Seq data and MAINE-Seq data, you could draw phasograms with intervals of expression levels
+If you have RNA-Seq data and MAINE-Seq data, you could draw phasograms on genes (or other relevant feature) grouped by expression levels. To do so, you have to defined a list of features to which the analysis will be limited.
 
-Generate TPM count file from RNA-Seq mapped data (sorted, indexed bam) and annotation file
+If you do not have counts on your features, you can generate TPM count file from RNA-Seq mapped data (sorted and indexed bam) and annotation fil :
 
 `MSTS_count_TPM.py RNA_mapping.sorted.bam genes.gff3 -v 2 > counts.tpm`
 
-Export transcript list of IDs for defined Expression Level intervals (x>50,50>=x>5,5>=x>1,x<=1)
+Export list of transcripts IDs for each defined Expression Level intervals, *e.g* [x>50,50>=x>5,5>=x>1,x<=1].
 
 ```
 tail -n+2 counts.tpm | awk -F"\t" '{if($5 > 50){print $1}}' > 50.tpm 
@@ -139,7 +143,7 @@ tail -n+2 counts.tpm | awk -F"\t" '{if($5 <= 5 && $5 > 1){print $1}}' > 5-1.tpm
 tail -n+2 counts.tpm | awk -F"\t" '{if($5 < 1){print $1}}' > 1.tpm 
 ```
 
-Generate phasogram for each list
+Generate phasograms restricting the analysis to genes on each list
 
 ```
 MSTS_feature_phasogram.py mapping.bw genes.gff3 -v 2 -o myfeaturestartphasogram50.png -t "phasogram on transcript, start as pivot, TPM > 50"  -ft mRNA -l 50.tpm --context --GaussianSmoothing --flush > 50.tpm.phaso
@@ -155,23 +159,25 @@ MSTS_feature_phasogram.py mapping.bw genes.gff3 -v 2 -o myfeaturestartphasogram1
 <img src="doc/images/myfeaturestartphasogram5-1.png" width=425><img src="doc/images/myfeaturestartphasogram1.png" width=425>
 
 
-With the '--flush' option, you can export the data to merge all phasograms on single one as below, with `MSTS_merge_phasograms.py`. [Here](doc/MSTS_merge_phasograms.md) you will find a piece of code to generate the "merged phasogram". 
+The '--flush' option, allows exporting the to be used to merge all phasograms on a single figure as below, with `MSTS_merge_phasograms.py`. [Here](doc/MSTS_merge_phasograms.md) you will find a piece of code to generate the "merged phasogram". 
 
 <div align="center"><img src="doc/images/phaso.merge.png" width=650></div>
 
 
-## Detect and classify nucleosomes
+## Detect and categorize nucleosomes
 
-For most of available tools, the nucleosome detection and positioning are based on a simply greedy approach that consist for each sequence:
+For most of available tools, the nucleosome detection and positioning are based on a simple greedy approach that consists for each sequence in:
 - descending sort of occupancy values for each position
 - defining nucleosome positions from the highest occupancy value to the lowest with a constraint of 147bp.
 - limiting peak detection to a min/max coverage
 
-More sophiscated tool, defined TBB (*Zhou et al. 2016*), that allow several positions for the same nucleosome.  In your case, we decided to keep the conventional protocole to define an average position, allowing a possible overlap between nucleosome in case of fuzzy area (30bp by default). Moreover, we perform a clustering and classification to propose confidence level in nucleosome positioning. We define 4 categories: "very-well", "well", "fuzzy" and "bad" positioned. 
+More sophiscated tool, defined TBB (*Zhou et al. 2016*), that allow several positions for the same nucleosome, instead of a signal consensus.  For MSTS, we decided to keep the conventional protocol to define an average position for a given nucleosome, allowing overlaps between nucleosomes for cases of 'fuzzy' regions (30ba-long overlap max by default). Then, MSTS perform a clustering and classification to provide an indication of the confidence level in nucleosome positioning. We defined 4 categories of positioned nucleosomes: "very-well", "well", "fuzzy" and "bad". 
+
+Typical command to run:
 
 `MSTS_detect_nucleosomes.py mapping.bw -p detection --bed --wig `
 
-You get the list of detected nucleosomes in __detection_nucleosomes.txt__ 
+Example of the output below:
 
 ```
 seq     start   end     mean    stdev   peak    cluster positioning
@@ -203,14 +209,14 @@ SEQ01  6817    6963    55.768707483    30.0518979733   103.0   2       well
 ...
 ```
 
-The mean is computed with occupancy value for all positions of the defined nucleosome (147 bp long).
+The mean is computed with occupancy value for all positions of the defined nucleosome (147 bp in length).
 
 For further analysis or visualization, the --bed option exports positioned nucleosomes per cluster and the --wig option exports the smoothed signal used to classify occupancy values.
 We also export the clustering as a cartoon to easily visualize the average profile of each cluster.
 
 <img src="doc/images/clusters-2.png">
 
-If you find few very-well, well positioned and a remarkably number of fuzzy, you can try the --refine option, that will relaunch a clustering on fuzzy positioned with a relaxed classification. See below the upper analysis with a refined clustering.
+If you find few very-well and, well positioned nucleosomes and a remarkably high number of fuzzy nuclesomes, you can try the --refine option, that will relaunch a clustering on the fuzzy class with a relaxed classification. See below the example of the upper analysis re-done with a refined clustering.
 
 <img src="doc/images/clusters-2-refine.png"> 
 
@@ -218,7 +224,7 @@ If you find few very-well, well positioned and a remarkably number of fuzzy, you
 ## Differential signal analysis
 
 We propose a simple approach to analyze differences between 2 conditions. We only analyze positions detected as potential dyad of nucleosomes, with a possible filter on the reliability of each type of nucleosome positioning (default=fuzzy). We use a Poisson distribution with a lambda equals to the normalized peak occupancy for each condition. Then we use a test ratio for two Poisson rates followed by a Benjamini-Hochberg correction for multiple tests. The default normalization method is quantile, but a global scaling (scaling factor defined with the average of number reads in all replicats) is also available.
-In case of multiple replicates, we provide a dendogram of hierarchical clustering to control the homogeneity of replicates. In the same manner, the p-value plot allow you to validate the expected results.
+In case of multiple replicates, we provide a dendogram of hierarchical clustering to control the homogeneity of replicates. In the same manner, the p-value plot allows you to validate the expected results.
 The user must provide a design file with link to all required files. 
 
 __*design file:*__
@@ -268,29 +274,29 @@ _p-values plot_:
 
 ## Analyze di-nucleotide composition
 
-The di-nucleotide pattern AT/GC with a frequence of 10 bp for nucleosome fixation site has been largely described and proposed to be used as data quality control (*S.Hu et al. 2017*). You can perform a such analysis on your mapping data converted in bigBed file with MSTS_converter.py
+The di-nucleotide pattern AT/GC with a frequency of 10 bp for nucleosome fixation site has been largely described and proposed to be used as data quality control (*S.Hu et al. 2017*). You can perform such analysis on your mapping output converted in bigBed file with MSTS_converter.py
 
 ### From mapped reads 
 
 ```
 # convert your mapping bed file to bigBed and run MSTS_dinuc_frequency
 bedToBigBed mapping.bed assembly.genome mapping.bb
-MSTS_dinuc_frequency.py mapping.bb 
+MSTS_dinuc_frequency.py assembly.fasta mapping.bb 
 ```
 
 <img src="doc/images/detect_dinuc_mapping_40_ATGC_Normalized.png" width="425"> <img src="doc/images/detect_dinuc_mapping_40_ATGC_Correlogram.png" width="425">
 
 ### From detected nucleosome positions
 
-You can also control your nucleosome detection and classification with this tool. We expect a better signal for well positioned nucleosome compare to bad/loosely positioned. To do that run MSTS_detect_nucleosomes.py with --bed option and convert them to bigBed. We present below the dinucleotide frequency analyzed for 4 types of clusters (bad, fuzzy, well, very-well):
+You can also control your nucleosome detection and classification with this tool. We expect a better signal for well positioned compared to badly/loosely positioned nucleosomes. To do this, run MSTS_detect_nucleosomes.py with --bed option and convert them to bigBed. We present below dinucleotide frequency profiles analyzed for 4 types of clusters (bad, fuzzy, well, very-well):
 
-__*bad positioned nucleosomes:*__
+__*badly positioned nucleosomes:*__
 
 `MSTS_dinuc_frequency.py genome.fasta detect.k1-bad.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_bad -ami -65 -amx 65`
 
 <img src="doc/images/detect_dinuc_bad_ATGC_Normalized.png" width="425"> <img src="doc/images/detect_dinuc_bad_ATGC_Correlogram.png" width="425">
 
-__*fuzzy positioned nucleosomes:*__
+__*fuzzily positioned nucleosomes:*__
 
 `MSTS_dinuc_frequency.py genome.fasta detect.k2-fuzzy.cluster.sorted.bb --pAutocorMix --pFreqNormMix -p detect_dinuc_fuzzy -ami -65 -amx 65`
 
