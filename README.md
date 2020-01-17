@@ -6,8 +6,10 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRAE-B
 
 # Table of contents
 
-* [Requirements](#requirements)
 * [Installation](#installation)
+	* [Prerequisites](#prerequisites)
+	* [Basic installation](#basic-installation)
+	* [Dependencies and external tools](#dependencies-and-external-tools)
 * [Tool documentation](#tool-documentation)
 * [Protocol to analyze MAINE-Seq data](#protocol-to-analyze-maine-seq-data)
 	* [Introduction](#introduction)
@@ -26,18 +28,9 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRAE-B
 
 
 
+# Installation
 
-## Dependencies and external tools
-
-### External tools
-
-* samtools
-* wigToBigWig [Kent's tools](https://github.com/ENCODE-DCC/kentUtils)
-* bedToBigBed [Kent's tools](https://github.com/ENCODE-DCC/kentUtils)
-
-## Install
-
-### Prerequisites:
+## Prerequisites
 
 Python 3.X (tested with 3.7)
 
@@ -55,9 +48,16 @@ To install required packages download the requirements and launch:
 
 `pip install -r requirements.txt`
 
-### Install from github
+## Basic installation
 
 `pip install https://github.com/nlapalu/MSTS/archive/master.zip`
+
+## Dependencies and external tools
+
+* samtools
+* wigToBigWig [Kent's tools](https://github.com/ENCODE-DCC/kentUtils)
+* bedToBigBed [Kent's tools](https://github.com/ENCODE-DCC/kentUtils)
+
 
 # Protocol to analyze MAINE-Seq data
 
