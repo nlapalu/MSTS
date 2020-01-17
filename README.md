@@ -22,7 +22,7 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRAE-B
 	* [Differential signal analysis](#differential-signal-analysis)
 	* [Analyze di-nucleotide composition](#analyze-di-nucleotide-composition)
 		* [From mapped reads](#from-mapped-reads) 
-		* [From detected nucleosome positions](from-detected-nucleosome-positions)
+		* [From detected nucleosome positions](#from-detected-nucleosome-positions)
 * [References](#references)
 
 
