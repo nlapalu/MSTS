@@ -7,6 +7,7 @@ import argparse
 import pyBigWig
 import math
 import numpy as np
+from sklearn import preprocessing
 
 from MSTS.version import __version__
 from MSTS.Parser.SimpleGffParser import SimpleGffParser
@@ -160,9 +161,9 @@ if __name__ == "__main__":
     parser.add_argument("--norm", help="Normalize signal value with the average signal of all features of the same type", action="store_true", default=False)
     parser.add_argument("--flush",help="print phases on stdout to save in file, > phases.out", action="store_true", default=False)
     parser.add_argument("-l","--lIds", help="txt file with ID list (one ID per line), limit phasogram to the features specified in the file. Features must be of the same type as featureType", type=str, default=None)
+    parser.add_argument("--heatmap", help="export coresponding heatmap", action="store_true", default=False)
     parser.add_argument("-v", "--verbosity", type=int, choices=[1,2,3],
                         help="increase output verbosity 1=error, 2=info, 3=debug")
-    
 
     args = parser.parse_args()
 
@@ -204,6 +205,7 @@ if __name__ == "__main__":
     winBefore = args.windowBefore
     winAfter = args.windowAfter
     lPhases = [0]*(1+winBefore+winAfter)
+    lAllPhases = []
     lPhasesNb = [0]*(1+winBefore+winAfter)
     lOtherGenesNb = [0]*(1+winBefore+winAfter)
 
@@ -218,7 +220,12 @@ if __name__ == "__main__":
             lFeatures = db.selectFeatureFromIdListAndType(chrom, lIds, featType)
         else:
             lFeatures = db.selectFeatureTypeFromReference(chrom, featType)
-        for feat in lFeatures:
+
+        nbAnalyzedFeat = len(lAllPhases)
+        for ftIdx, feat in enumerate(lFeatures):
+
+            lAllPhases.append([0]*(1+winBefore+winAfter))
+
             if feat.strand == 1:
                 if pivot == 'start':
                     start = max(1,feat.start-winBefore)
@@ -253,18 +260,19 @@ if __name__ == "__main__":
             lOtherGenesBases = []
             if feat.strand == 1:
                 if pivot == 'start':
-                    lValues = bw.values(chrom,startNew-1,end) 
+                    lValues = bw.values(chrom,startNew-1,end)
                     decal = 0
                     if context:
                         lValues = bw.values(chrom,startNew-1,feat.end)
                         decal = (startNew-start)
                     for i in range(0+decal,min(len(lValues)+decal,winBefore+winAfter+1)):
                         lPhases[i] += lValues[i-decal]
+                        lAllPhases[ftIdx+nbAnalyzedFeat][i] = lValues[i-decal]
                         lPhasesNb[i] += 1
                         index = i
                     lOtherGenesBases = getBasesOverlappingOtherGenes(lOverlappingFeatures,feat.start,feat.end,start,end)
                 elif pivot == 'end':
-                    
+
                     lValues = bw.values(chrom,start-1,endNew)
                     decal=0
                     if context:
@@ -273,6 +281,7 @@ if __name__ == "__main__":
 
                     for i in range(decal,min(decal+len(lValues),winBefore+winAfter+1)):
                         lPhases[i] += lValues[i-decal]
+                        lAllPhases[ftIdx+nbAnalyzedFeat][i] = lValues[i-decal]
                         lPhasesNb[i] += 1
                         index = i
                     lOtherGenesBases = getBasesOverlappingOtherGenes(lOverlappingFeatures,feat.start,feat.end,start,end)
@@ -285,6 +294,7 @@ if __name__ == "__main__":
                         decal = (startNew-start)
                     for i in range(-1+decal,max(-len(lValues)+decal-1,(-winAfter)+(-winBefore)+(-1)-1),-1):
                         lPhases[-i-1] += lValues[i-decal]
+                        lAllPhases[ftIdx+nbAnalyzedFeat][-i-1] = lValues[i-decal]
                         lPhasesNb[-i-1] += 1
                         index = i
                     lOtherGenesBases = getBasesOverlappingOtherGenes(lOverlappingFeatures,feat.start,feat.end,end,start)[::-1]
@@ -295,8 +305,8 @@ if __name__ == "__main__":
                         lValues = bw.values(chrom,endNew-1,feat.end)
                         decal = max((winBefore-(feat.end-feat.start)),0)
                     for i in range(-1-decal,max(-len(lValues)-decal,(-winAfter)+(-winBefore)+(-1)-1), -1):
-
                         lPhases[-i-1] += lValues[i+decal]
+                        lAllPhases[ftIdx+nbAnalyzedFeat][-i-1] = lValues[i-decal]
                         lPhasesNb[-i-1] += 1
                         index = i
                     lOtherGenesBases = getBasesOverlappingOtherGenes(lOverlappingFeatures,feat.start,feat.end,end,start)[::-1]
@@ -309,6 +319,20 @@ if __name__ == "__main__":
 
     #        print(lPhases)
     lAveragePhases = [0]*(1+winBefore+winAfter)
+    lSmoothedAllPhases = []
+    for idx,feature_phase in enumerate(lAllPhases):
+        lSmoothedAllPhases.append(gaussianSmoothing(feature_phase, args.windowWidth, args.stdev))
+        if not idx%1000:
+            logging.info("{} feature values smoothed on {}".format(idx+1, len(lAllPhases)))
+
+    heatvalues = np.array(lSmoothedAllPhases, dtype=np.float)
+    heatvaluesNoNaN = np.nan_to_num(heatvalues)
+
+  #  heatvalues = np.array(lAllPhases)
+
+    heatvaluesNorm = preprocessing.normalize(heatvaluesNoNaN, norm='max')
+    np.set_printoptions(threshold=np.inf)
+    print(heatvaluesNorm[0])
     #print(lPhases)
     #print(lPhasesNb)
     for a,b in enumerate(lPhases):
@@ -341,6 +365,10 @@ if __name__ == "__main__":
 
     else:
         Graphics.plotDistributionWithGeneHistogram([x for x in range(-winBefore,winAfter+1)],lAveragePhases[0:(winBefore+winAfter+1)],lPhasesNb[0:(winBefore+winAfter+1)],lOtherGenesNb[0:(winBefore+winAfter+1)],out=args.out, title=args.title, xax=args.xax, yax=args.yax, yax2=args.zax)
+
+    if args.heatmap:
+
+        Graphics.plotHeatmap(heatvaluesNorm, out="heatmap-{}".format(args.out), title="Heatmap - {}".format(args.title))
 
     if args.flush:
         for x in range(0,winBefore+winAfter+1):

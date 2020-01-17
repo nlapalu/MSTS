@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from matplotlib import gridspec
+from matplotlib.colors import Normalize
 
 from scipy.cluster.hierarchy import dendrogram
 from scipy.stats import variation
@@ -377,6 +378,24 @@ class Graphics(object):
         ax.set_xlabel(xax, **axis_font)
         ax.set_ylabel(yax, **axis_font)
         ax.tick_params(labelsize=20)
+        canvas = FigureCanvasAgg(fig)
+        canvas.print_figure(out, dpi=80)
+
+    @staticmethod
+    def plotHeatmap(lvalues, out="out.png", title="title", xax="xax", yax="yax"):
+        """Draw Heatmap"""
+
+        fig = plt.Figure(figsize=(20,200))
+        fig.suptitle(title, fontsize=32)
+        ax = fig.add_subplot(111)
+        #im = ax.imshow(lvalues, norm=Normalize(0.0,1.0))
+        im = ax.imshow(lvalues, vmin=0.0, vmax=1.0)
+        fig.colorbar(im)
+#        ax.hist(lXs,lYs)
+#        axis_font = {'size':'28'}
+#        ax.set_xlabel(xax, **axis_font)
+#        ax.set_ylabel(yax, **axis_font)
+#        ax.tick_params(labelsize=20)
         canvas = FigureCanvasAgg(fig)
         canvas.print_figure(out, dpi=80)
 
