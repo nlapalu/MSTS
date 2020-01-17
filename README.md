@@ -14,8 +14,8 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRAE-B
 * [Protocol to analyze MAINE-Seq data](#protocol-to-analyze-maine-seq-data)
 	* [Process mapped sequencing reads](#process-mapped-sequencing-reads)
 	* [Draw phasogram and get nucleosome spacing](#draw-phasogram-and-get-nucleosome-spacing)
-		* [Genome-wide analysis](#genome-wide-analysis)
-		* [Compartment-specific analysis](#compartment-specific analysis)
+	* [Genome-wide analysis](#genome-wide-analysis)
+	* [Compartment-specific analysis](#compartment-specific analysis)
 	* [Draw feature-specific phasogram](#draw-feature-specific-phasogram)
 	* [Explore relationship between Transcript Expression level and nucleosome occupancy](#explore-relationship-between-transcript-expression-level-and-nucleosome-occupancy)
 	* [Detect and categorize nucleosomes](#detect-and-categorize-nucleosomes)
@@ -70,7 +70,7 @@ The tool of your choice can be used to map sequencing reads as long as the outpu
 
 Then use the MSTS converter to process bam files:
 
-### For single reads
+#### For single reads
 
 `MSTS_converter.py mapping.sorted.bam -m single-expanded -p mapping -g assembly.genome --wig --size`
 
@@ -78,7 +78,7 @@ Then use the MSTS converter to process bam files:
 
 `MSTS_converter.py mapping.sorted.bam -m fragment-middle -w 20 -p mapping -g assembly.genome --wig --size --bed`
 
-### Convert wig file to bigWig file
+#### Convert wig file to bigWig file
 
 `wigToBigWig mapping.wig assembly.genome mapping.bw`
 
