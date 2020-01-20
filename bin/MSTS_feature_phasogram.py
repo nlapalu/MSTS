@@ -90,8 +90,8 @@ def gaussianSmoothing(data, windowWidth=3, stdev=20):
         for i in range(0,len(smoothed)):
             for j in range(0,len(filter)):
                 smoothed[i] += data[i + j] * filter[j]
-        smoothed[0:windowWidth*stdev] = [None]*(windowWidth*stdev)
-        smoothed[-(windowWidth*stdev):] = [None]*(windowWidth*stdev)
+        smoothed[0:windowWidth*stdev] = [np.nan]*(windowWidth*stdev)
+        smoothed[-(windowWidth*stdev):] = [np.nan]*(windowWidth*stdev)
 
         return smoothed
         
@@ -162,6 +162,8 @@ if __name__ == "__main__":
     parser.add_argument("--flush",help="print phases on stdout to save in file, > phases.out", action="store_true", default=False)
     parser.add_argument("-l","--lIds", help="txt file with ID list (one ID per line), limit phasogram to the features specified in the file. Features must be of the same type as featureType", type=str, default=None)
     parser.add_argument("--heatmap", help="export coresponding heatmap", action="store_true", default=False)
+    parser.add_argument("--heatmapsmooth", help="Perform Gaussian smoothing on each feature (time consuming)", action="store_true", default=False)
+    parser.add_argument("--keepLIdOrder", help="export heatmap with respect to LIds order if supplied", action="store_true", default=False)
     parser.add_argument("-v", "--verbosity", type=int, choices=[1,2,3],
                         help="increase output verbosity 1=error, 2=info, 3=debug")
 
@@ -210,6 +212,8 @@ if __name__ == "__main__":
     lOtherGenesNb = [0]*(1+winBefore+winAfter)
 
     lIds = []
+    d = {}
+
     if args.lIds:
         lIds = readFeatureIds(args.lIds)
     #lIds = ['Avrlm3_Lema_T200610.1', 'lm_SuperContig_0_v2_lmctg_0007_v2_egn4_orf_Lema_T000020.1']    
@@ -223,6 +227,9 @@ if __name__ == "__main__":
 
         nbAnalyzedFeat = len(lAllPhases)
         for ftIdx, feat in enumerate(lFeatures):
+            #print(feat.id)
+            if args.keepLIdOrder:
+                d[feat.id] = ftIdx+nbAnalyzedFeat
 
             lAllPhases.append([0]*(1+winBefore+winAfter))
 
@@ -270,6 +277,11 @@ if __name__ == "__main__":
                         lAllPhases[ftIdx+nbAnalyzedFeat][i] = lValues[i-decal]
                         lPhasesNb[i] += 1
                         index = i
+                    for i in range(0,0+decal):
+                        lAllPhases[ftIdx+nbAnalyzedFeat][i] = np.nan
+                    for i in range(min(len(lValues)+decal,winBefore+winAfter+1), winBefore+winAfter+1):
+                        lAllPhases[ftIdx+nbAnalyzedFeat][i] = np.nan
+
                     lOtherGenesBases = getBasesOverlappingOtherGenes(lOverlappingFeatures,feat.start,feat.end,start,end)
                 elif pivot == 'end':
 
@@ -284,6 +296,12 @@ if __name__ == "__main__":
                         lAllPhases[ftIdx+nbAnalyzedFeat][i] = lValues[i-decal]
                         lPhasesNb[i] += 1
                         index = i
+                    for i in range(0,decal):
+                        lAllPhases[ftIdx+nbAnalyzedFeat][i] = np.nan
+                    for i in range(min(len(lValues)+decal,winBefore+winAfter+1), winBefore+winAfter+1):
+                        lAllPhases[ftIdx+nbAnalyzedFeat][i] = np.nan
+
+
                     lOtherGenesBases = getBasesOverlappingOtherGenes(lOverlappingFeatures,feat.start,feat.end,start,end)
             elif feat.strand == -1:
                 if pivot == 'start':
@@ -297,6 +315,12 @@ if __name__ == "__main__":
                         lAllPhases[ftIdx+nbAnalyzedFeat][-i-1] = lValues[i-decal]
                         lPhasesNb[-i-1] += 1
                         index = i
+                    for i in range(-1,-1+decal, -1):
+                        lAllPhases[ftIdx+nbAnalyzedFeat][-i-1] = np.nan
+                    for i in range( max(-len(lValues)+decal-1,(-winAfter)+(-winBefore)+(-1)-1),(-winAfter)+(-winBefore)+(-1)-1 ,-1):
+                        lAllPhases[ftIdx+nbAnalyzedFeat][-i-1] = np.nan
+
+
                     lOtherGenesBases = getBasesOverlappingOtherGenes(lOverlappingFeatures,feat.start,feat.end,end,start)[::-1]
                 elif pivot == 'end':
                     lValues = bw.values(chrom,endNew-1,start)
@@ -309,6 +333,10 @@ if __name__ == "__main__":
                         lAllPhases[ftIdx+nbAnalyzedFeat][-i-1] = lValues[i-decal]
                         lPhasesNb[-i-1] += 1
                         index = i
+                    for i in range(-1,-1+decal, -1):
+                        lAllPhases[ftIdx+nbAnalyzedFeat][-i-1] = np.nan
+                    for i in range( max(-len(lValues)+decal-1,(-winAfter)+(-winBefore)+(-1)-1),(-winAfter)+(-winBefore)+(-1)-1 ,-1):
+                        lAllPhases[ftIdx+nbAnalyzedFeat][-i-1] = np.nan 
                     lOtherGenesBases = getBasesOverlappingOtherGenes(lOverlappingFeatures,feat.start,feat.end,end,start)[::-1]
 
             else:
@@ -319,22 +347,54 @@ if __name__ == "__main__":
 
     #        print(lPhases)
     lAveragePhases = [0]*(1+winBefore+winAfter)
+
+#    print(len(d.keys()))
+#    print(len(lIds))
+
+    if args.keepLIdOrder:
+        lSortedAllPhases = []
+        for i in lIds:
+            #print(i)
+            lSortedAllPhases.append(lAllPhases[d[i]])
+        lAllPhases = lSortedAllPhases
+
+#    for idx,feature_phase in enumerate(lAllPhases):
+#        lSmoothedAllPhases.append(gaussianSmoothing(feature_phase, args.windowWidth, args.stdev))
+#        if not (idx+1)%1000:
+#            logging.info("{} feature values smoothed on {}".format(idx+1, len(lAllPhases)))
+
+#    heatvalues = np.array(lSmoothedAllPhases, dtype=np.float)
+
+    heatvalues = np.array(lAllPhases, dtype=np.float64)
+    lAllPhasesNorm = []
+    for u,s in enumerate(lAllPhases):
+        mi= np.nanmin(s)
+        ma = np.nanmax(s)
+        l = []
+        for x in s:
+            if np.isnan(np.array([x])):
+                l.append(np.nan)
+            else:
+                l.append((x-mi*1.0)/(ma-mi))
+        lAllPhasesNorm.append(l)
+
+
+    heatvalues = np.array(lAllPhasesNorm, dtype=np.float)
+
     lSmoothedAllPhases = []
-    for idx,feature_phase in enumerate(lAllPhases):
-        lSmoothedAllPhases.append(gaussianSmoothing(feature_phase, args.windowWidth, args.stdev))
-        if not idx%1000:
-            logging.info("{} feature values smoothed on {}".format(idx+1, len(lAllPhases)))
+    if args.heatmapsmooth:
 
-    heatvalues = np.array(lSmoothedAllPhases, dtype=np.float)
-    heatvaluesNoNaN = np.nan_to_num(heatvalues)
+        heatvaluesNoNaN = np.nan_to_num(heatvalues)
+        for idx,feature_phase in enumerate(heatvaluesNoNaN):
+            lSmoothedAllPhases.append(gaussianSmoothing(list(feature_phase), args.windowWidth, args.stdev))
+            if not (idx+1)%1000:
+                logging.info("{} feature values smoothed on {}".format(idx+1, len(lAllPhases)))
 
-  #  heatvalues = np.array(lAllPhases)
+        for i,s in enumerate(heatvalues):
+            for j,x in enumerate(s):
+                if np.isnan(x):
+                    lSmoothedAllPhases[i][j] = np.nan
 
-    heatvaluesNorm = preprocessing.normalize(heatvaluesNoNaN, norm='max')
-    np.set_printoptions(threshold=np.inf)
-    print(heatvaluesNorm[0])
-    #print(lPhases)
-    #print(lPhasesNb)
     for a,b in enumerate(lPhases):
         if lPhasesNb[a] != 0:
             lAveragePhases[a] = lPhases[a]/lPhasesNb[a]
@@ -367,8 +427,10 @@ if __name__ == "__main__":
         Graphics.plotDistributionWithGeneHistogram([x for x in range(-winBefore,winAfter+1)],lAveragePhases[0:(winBefore+winAfter+1)],lPhasesNb[0:(winBefore+winAfter+1)],lOtherGenesNb[0:(winBefore+winAfter+1)],out=args.out, title=args.title, xax=args.xax, yax=args.yax, yax2=args.zax)
 
     if args.heatmap:
-
-        Graphics.plotHeatmap(heatvaluesNorm, out="heatmap-{}".format(args.out), title="Heatmap - {}".format(args.title))
+        if args.heatmapsmooth:
+            Graphics.plotHeatmap(lSmoothedAllPhases, out="heatmap-{}".format(args.out), title="Heatmap - {}".format(args.title), xax="position bp", yax="#features", mi=args.windowBefore, ma=args.windowAfter)
+        else:
+            Graphics.plotHeatmap(heatvalues, out="heatmap-{}".format(args.out), title="Heatmap - {}".format(args.title), xax="position bp", yax="#features", mi=args.windowBefore, ma=args.windowAfter)
 
     if args.flush:
         for x in range(0,winBefore+winAfter+1):

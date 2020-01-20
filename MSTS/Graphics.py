@@ -382,20 +382,31 @@ class Graphics(object):
         canvas.print_figure(out, dpi=80)
 
     @staticmethod
-    def plotHeatmap(lvalues, out="out.png", title="title", xax="xax", yax="yax"):
+    def plotHeatmap(lvalues, out="out.png", title="title", xax="xax", yax="yax", mi=1000, ma=1000):
         """Draw Heatmap"""
 
-        fig = plt.Figure(figsize=(20,200))
+        length = math.ceil(len(lvalues)/30)
+        fig = plt.Figure(figsize=(100,length))
+#        fig = plt.Figure()
         fig.suptitle(title, fontsize=32)
         ax = fig.add_subplot(111)
         #im = ax.imshow(lvalues, norm=Normalize(0.0,1.0))
-        im = ax.imshow(lvalues, vmin=0.0, vmax=1.0)
+
+
+        #cmap = plt.cm.Oranges
+        cmap = plt.cm.Blues
+        cmap.set_bad('grey',1.)
+        im = ax.imshow(lvalues, aspect='auto', norm=Normalize(0.0,1.0),cmap=cmap, vmin=0.0, vmax=1.0)
         fig.colorbar(im)
 #        ax.hist(lXs,lYs)
-#        axis_font = {'size':'28'}
-#        ax.set_xlabel(xax, **axis_font)
-#        ax.set_ylabel(yax, **axis_font)
-#        ax.tick_params(labelsize=20)
+        axis_font = {'size':'28'}
+        ax.set_xlabel(xax, **axis_font)
+        ax.set_ylabel(yax, **axis_font)
+        ax.tick_params(labelsize=20)
+
+        x_label_list = ['{}'.format(-mi),'0,','{}'.format(ma)]
+        ax.set_xticks([0,mi,mi+ma])
+        ax.set_xticklabels(x_label_list)
         canvas = FigureCanvasAgg(fig)
         canvas.print_figure(out, dpi=80)
 
