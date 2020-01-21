@@ -61,6 +61,7 @@ if __name__ == '__main__':
     parser.add_argument("-ami","--autocorMin", help="start for autocorrelation analysis, default=[5]", type=int, default=5)
     parser.add_argument("-amx","--autocorMax", help="stop for autocorrelation analysis, default=[35]", type=int, default=35)
     parser.add_argument("--regression",help="detect peaks and perform a regression on autocorrelation curves. Regression curve drawn on the graph", action="store_true", default=False)
+    parser.add_argument("--flushautocor",help="print autocorrelation", action="store_true", default=False)
     parser.add_argument("-b","--buffer", help="size of chunk (nb sequences) to keep in memory before analysis", type=int, default=1000000)
     parser.add_argument("-v", "--verbosity", type=int, choices=[1,2,3],
                         help="increase output verbosity 1=error, 2=info, 3=debug")
@@ -178,6 +179,11 @@ if __name__ == '__main__':
     if args.pAutocor or args.pAutocorMix:
         lRhAT = autocorrelation(range(0,args.autocorMax-args.autocorMin),lFreqATs[args.autocorMin+args.distance:args.autocorMax+args.distance])
         lRhGC = autocorrelation(range(0,args.autocorMax-args.autocorMin),lFreqGCs[args.autocorMin+args.distance:args.autocorMax+args.distance])
+
+        if args.flushautocor:
+            print("\npos\tATautocor\tGCautocor")
+            for i,val in enumerate(range(args.autocorMin,args.autocorMax)):
+                print("{}\t{}\t{}".format(val,lRhAT[i],lRhGC[i]))
 
         if args.pAutocor:
             Graphics.plotDistribution(range(args.autocorMin,args.autocorMax),lRhAT,out="{}_AT_Correlogram.png".format(args.prefix),title="autocorrelation of dinucleotides AA,AT,TA,TT", xax="position in bp", yax="Rh, autocorrelation coefficient", legend=["AA/AT/TA/TT"])
