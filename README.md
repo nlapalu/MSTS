@@ -1,6 +1,6 @@
-# MSTS: MAINE-Seq Tool Suite
+# MSTS: MNase-Seq Tool Suite
 
-MSTS has been developed to analyze NGS data obtained from MAINE-Seq experiments and provide utilities to perform simple statistics and to plot results.
+MSTS has been developed to analyze NGS data obtained from MNase-Seq experiments and provide utilities to perform simple statistics and to plot results.
 
 MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRAE-BIOGER](http://www.versailles-grignon.inra.fr/bioger). Please do not hesitate to contact us (nicolas.lapalu at inrae dot fr) if you have any comments or questions.
 
@@ -10,8 +10,7 @@ MSTS is developed by the BioinfoBIOGER plateform (N.Lapalu, A.Simon) at [INRAE-B
 	* [Prerequisites](#prerequisites)
 	* [Basic installation](#basic-installation)
 	* [Dependencies and external tools](#dependencies-and-external-tools)
-* [Tool documentation](#tool-documentation)
-* [Protocol to analyze MAINE-Seq data](#protocol-to-analyze-maine-seq-data)
+* [Protocol to analyze MNase-Seq data](#protocol-to-analyze-mnase-seq-data)
 	* [Process mapped sequencing reads](#process-mapped-sequencing-reads)
 	* [Draw phasogram and get nucleosome spacing](#draw-phasogram-and-get-nucleosome-spacing)
 		* [Genome-wide analysis](#genome-wide-analysis)
@@ -58,7 +57,7 @@ To install required packages download the requirements and launch:
 * bedToBigBed [Kent's tools](https://github.com/ENCODE-DCC/kentUtils)
 
 
-# Protocol to analyze MAINE-Seq data
+# Protocol to analyze MNase-Seq data
 
 ## Process mapped sequencing reads
 
@@ -124,7 +123,7 @@ You can perform the same analysis on all the feature types available in your gff
 
 ## Explore relationship between Transcript Expression level and nucleosome occupancy
 
-If you have RNA-Seq data and MAINE-Seq data, you could draw phasograms on genes (or other relevant feature) grouped by expression levels. To do so, you have to defined a list of features to which the analysis will be limited.
+If you have RNA-Seq data and MNase-Seq data, you could draw phasograms on genes (or other relevant feature) grouped by expression levels. To do so, you have to defined a list of features to which the analysis will be limited.
 
 If you do not have counts on your features, you can generate TPM count file from RNA-Seq mapped data (sorted and indexed bam) and annotation fil :
 
