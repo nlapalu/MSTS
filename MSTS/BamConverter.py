@@ -205,6 +205,8 @@ class BamConverter(object):
         nbTotalFrags = 0
         nbAnalyzedFrags = 0
 
+        seq_length = self.bamFileH.get_reference_length(seq)
+
         for read in self.bamFileH.fetch(reference=seq):
  
             start = None
@@ -237,54 +239,33 @@ class BamConverter(object):
                     dFragmentSize[end-start+1] += 1
                 else:
                     dFragmentSize[end-start+1] = 1
-                ##debug
-         #       print "{}\t{}\t{}".format(read.query_name,start,end)
 
-
-                ##debug 
                 nbAnalyzedFrags+=1 
                 if self.mode == "fragment":
                     lBedTracks.append((seq,start,end))
                     for x in range(start,end+1):
                         currentSeq[x] += 1
                 elif self.mode =="fragment-middle":
-                    #middle = end-((end-start+1)/2)
                     middle = int(start+math.ceil((end-start+1)/2.0))
-                    ##debug
-         #           if middle == 198:
-         #               print "198: {}".format(read.query_name)
-         #           if middle == 199:
-         #               print "199: {}".format(read.query_name)
-                    ##debug
                     window = self.window
 
-                    if (end-start+1) < self.window:
+                    if (end-start+1) < self.window*2:
                         if (end-start+1)%2:
-                            window = (end-start+1)/2-1
+                            window = int(((end-start+1)-1)/2)
+                            
                         else:
-                            window = (end-start+1)/2
-                    
-                 #   if (end-start+1)%2:
-                        
-                 #       for x in range(middle-window, middle+1+window):
-                 #           currentSeq[x] += 1 
-                 #           nbmiddle += 1
-                 #       lBedTracks.append((seq,middle - window ,(middle+1) + window))
-                #    else:
-                 #       for x in range(middle-window,middle+window):
-                 #           currentSeq[x] += 1
-                 #           nbmiddle +=1
-                 #       lBedTracks.append((seq,middle - window,middle + window))
-                    
-        #            nbmiddle = 0
-                    for x in range(middle-window, middle+1+window):
+                            window = int((end-start+1)/2)
+                    for x in range(middle-window, middle+window):
                         try:
                             currentSeq[x] += 1 
                         except:
                             print(x)
-        #                nbmiddle += 1
-        #            print nbmiddle
-                    lBedTracks.append((seq,middle - window , middle+1+ window))
+
+                    start_bed = max(middle - window, 0) 
+                    end_bed = min(middle+window, seq_length)
+                    
+
+                    lBedTracks.append((seq, start_bed, end_bed))
 
         if self.minDepCov != 0 or self.maxDepCov != 1000000:
             currentSeq, lBedTracks, dFragmentSize = self.reduceDataToSpecificDepCov(currentSeq, lBedTracks, dFragmentSize)
