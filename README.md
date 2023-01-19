@@ -1,3 +1,8 @@
+
+
+[![DOI](https://zenodo.org/badge/105980712.svg)](https://zenodo.org/badge/latestdoi/105980712)
+
+
 # MSTS: MNase-Seq Tool Suite
 
 MSTS has been developed to analyze NGS data obtained from MNase-Seq experiments and provide utilities to perform simple statistics and to plot results.
